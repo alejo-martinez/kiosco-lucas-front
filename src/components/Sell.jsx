@@ -1,17 +1,54 @@
 'use client';
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useCart } from '@/context/CartContext';
+import socket from '@/app/utils/socket.config';
+import { useSession } from '@/context/SessionContext';
+import { toast } from 'react-toastify';
+import api from '@/app/utils/axios.config';
 
 function Sell() {
 
-    const { cart } = useCart();
+    const { cart, emptyCart } = useCart();
+    const {user} = useSession();
+
+    const handleAdd = async(e, prod)=>{
+        e.preventDefault();
+        socket.emit('addToCart', {cid: user.cart._id, pid: prod.product._id, quantity: 1});
+    }
+
+    const handleRemove = async(e, prod)=>{
+        e.preventDefault();
+        socket.emit('addToCart', {cid:user.cart._id, pid: prod.product._id, quantity: -1});
+    }
+
+    const clearCart = async(e)=>{
+        e.preventDefault();
+        const response = await emptyCart(user.cart._id);
+        toast.success(response.message, {
+            duration:3000,
+            pauseOnHover:false,
+            closeButton:false,
+            hideProgressBar:true
+        })
+    }
+
+    useEffect(()=>{
+        socket.on('errorUpdate', data=>{
+            toast.error(data.error, {
+                duration:2000,
+                pauseOnHover:false,
+                hideProgressBar:true,
+                closeButton:false
+            })
+        })
+    }, []);
     // console.log(cart)
     return (
         <div>
             <div>
                 {cart.products?.length === 0 ?
-                    <div>
+                    <div className='flex justify-center'>
                         <span>No hay ninguna venta activa</span>
                     </div>
                     :
@@ -31,7 +68,18 @@ function Sell() {
                                     <tr key={index} className="border-b">
                                         <td className="w-1/5 p-2 text-left">{value.product.code}</td>
                                         <td className="w-1/5 p-2 text-left">{value.product.title}</td>
-                                        <td className="w-1/5 p-2 text-center">{value.quantity}</td>
+                                        <td className="w-1/5 p-2 text-center">
+                                            <div className='flex justify-center'>
+                                                {
+                                                    value.quantity - 1 !== 0 &&
+                                                    <button className='mr-1 cursor-pointer' onClick={(e)=> handleRemove(e, value)}>-</button>
+                                                }
+                                                <span>{value.quantity}</span>
+                                                {
+                                                    value.quantity + 1 <= value.product.stock &&
+                                                    <button className='ml-1 cursor-pointer' onClick={(e)=> handleAdd(e, value)}>+</button>
+                                                }
+                                            </div></td>
                                         <td className="w-1/5 p-2 text-right">$ {value.product.sellingPrice}</td>
                                         <td className="w-1/5 p-2 text-right">$ {value.totalPrice}</td>
                                     </tr>
@@ -39,7 +87,7 @@ function Sell() {
                             </tbody>
                         </table>
                         <div className='flex justify-center'>
-                            <button className='p-1 rounded border border-black bg-red-500 text-white font-bold transition-all duration-300 hover:cursor-pointer hover:bg-red-900'>Eliminar todo</button>
+                            <button className='p-1 rounded border border-black bg-red-500 text-white font-bold transition-all duration-300 hover:cursor-pointer hover:bg-red-900' onClick={clearCart}>Eliminar todo</button>
                         </div>
                     </div>
                 }

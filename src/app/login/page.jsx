@@ -21,14 +21,15 @@ function Login() {
     const response = await login(userLogin);
     console.log(response)
     if(response.status === 'success'){
-      toast.success(response.message,{
-        autoClose:3000,
+      toast.success('Sesion iniciada!',{
+        autoClose:1400,
         pauseOnHover:false,
         closeButton:false,
+        hideProgressBar:true
       })
       setTimeout(()=>{
         router.push('/');
-      }, 3000);
+      }, 1500);
     } else{
       toast.error(response.error,{
         autoClose:3000,
@@ -40,7 +41,7 @@ function Login() {
 
   return (
     <div className="flex flex-wrap justify-center h-screen items-center">
-      <form className="w-4/5 flex flex-col flex-wrap" >
+      <form className="w-2/5 flex flex-col flex-wrap" >
         <div className="flex justify-between">
           <label>Nombre de usuario</label>
           <input type="text" name="user_name" className='border p-1' onChange={handleChange}/>

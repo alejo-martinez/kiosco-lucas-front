@@ -2,17 +2,43 @@
 
 import React, { useEffect, useState } from 'react';
 import { useCart } from '@/context/CartContext';
-
+import api from '@/app/utils/axios.config';
+import { toast } from 'react-toastify';
 function Payment() {
 
     const [amount, setAmount] = useState(0);
     const [paymentMethod, setPaymentMethod] = useState('eft');
+    const [payment, setPayment] = useState(0);
 
-    const { cart } = useCart();
+    const { cart, setCart } = useCart();
 
     const handleChange = (e)=>{
         e.preventDefault();
         setPaymentMethod(e.target.value);
+    }
+
+    const handlePayment = (e)=>{
+        e.preventDefault();
+        setPayment(e.target.value);
+    }
+
+    const completeSell = async(e)=>{
+        try {
+            e.preventDefault();
+            const response = await api.post('/api/ticket/create', {amount: amount, payment_method: paymentMethod});
+            const data = response.data;
+            toast.success(data.message,{
+                duration:2000,
+                closeButton:true,
+                hideProgressBar:true
+            })
+            setAmount(0);
+            setCart(data.payload)
+        } catch (error) {  
+            toast.error('Error: ' + error.message,{
+                duration:3000
+            })
+        }
     }
 
     useEffect(() => {
@@ -33,7 +59,7 @@ function Payment() {
                 <span className='text-2xl'>Abona:</span>
                 <div className='flex items-center justify-end'>
                     <span className='font-bold text-xl mr-1'>$</span>
-                    <input type="number" className='border rounded w-2/5 p-1' />
+                    <input type="number" className='border rounded w-2/5 p-1' onChange={handlePayment}/>
                 </div>
             </div>
             <div className='flex justify-between'>
@@ -46,8 +72,8 @@ function Payment() {
                 </select>
             </div>
             <div className='flex flex-col gap-4'>
-                <button className='border rounded p-1 w-fit bg-green-500 text-white border-black transition-all duration-300 hover:cursor-pointer hover:bg-green-900 hover:cursor-pointer'>Realizar venta</button>
-                <button className='border rounded p-1 w-fit bg-blue-500 text-white border-black transition-all duration-300 hover:cursor-pointer hover:bg-blue-900'>Realizar venta con pago justo</button>
+                <button className='border rounded p-1 w-fit bg-green-500 text-white border-black transition-all duration-300 hover:cursor-pointer hover:bg-green-900 hover:cursor-pointer' >Realizar venta</button>
+                <button className='border rounded p-1 w-fit bg-blue-500 text-white border-black transition-all duration-300 hover:cursor-pointer hover:bg-blue-900' onClick={completeSell}>Realizar venta con pago justo</button>
             </div>
         </div>
     )

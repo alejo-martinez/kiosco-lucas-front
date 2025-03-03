@@ -10,9 +10,11 @@ export const SessionProvider = ({ children }) => {
 
     const router = useRouter();
     const [user, setUser] = useState(null);
+    const [loading, setLoading] = useState(true);
+
     const login = async (userLogin) => {
         try {
-            const response = await api.post('/session/login', userLogin);
+            const response = await api.post('/api/session/login', userLogin);
             const data = response.data;
             setUser(data.payload);
             return data;
@@ -29,7 +31,7 @@ export const SessionProvider = ({ children }) => {
 
     const register = async (userRegister) => {
         try {
-            const response = await api.post('/session/register', {userRegister});
+            const response = await api.post('/api/session/register', {userRegister});
             const data = response.data;
             return data;
         } catch (error) {
@@ -45,23 +47,24 @@ export const SessionProvider = ({ children }) => {
 
     const logout = async()=>{
         try {
-            const response = await api.delete('/session/logout');
+            const response = await api.delete('/api/session/logout');
             const data = response.data;
+            setUser(null)
             return data;
         } catch (error) {
             if(error.response){
-
+                return error.response.data;
             }if(error.request){
-
+                console.log(error.request)
             } else{
-
+                console.log(error);
             }
         }
     }
 
     const currentUser = async () => {
         try {
-            const response = await api.get('/session/current');
+            const response = await api.get('/api/session/current');
             const data = response.data;
             console.log('response: ' + data)
             return data;
@@ -81,7 +84,9 @@ export const SessionProvider = ({ children }) => {
             const data = await currentUser();
             if(data.status === 'success'){
                 setUser(data.payload);
+                setLoading(false);
             } else {
+                setLoading(false);
                 router.push('/login');
             }
         }
@@ -90,7 +95,11 @@ export const SessionProvider = ({ children }) => {
 
     return (
         <SessionContext.Provider value={{user, login, register, logout}}>
-            {children}
+            {loading? 
+            <p>Cargando...</p>
+            :
+
+            children}
         </SessionContext.Provider>
     )
 }
