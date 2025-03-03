@@ -5,8 +5,8 @@ import api from "@/app/utils/axios.config";
 import { useRouter } from "next/navigation";
 
 const SessionContext = createContext(undefined);
-
 export const SessionProvider = ({ children }) => {
+    const url = process.env.NEXT_PUBLIC_URL_BACK;
 
     const router = useRouter();
     const [user, setUser] = useState(null);
@@ -14,7 +14,7 @@ export const SessionProvider = ({ children }) => {
 
     const login = async (userLogin) => {
         try {
-            const response = await api.post('/api/session/login', userLogin);
+            const response = await api.post(`${url}/api/session/login`, userLogin);
             const data = response.data;
             setUser(data.payload);
             return data;
