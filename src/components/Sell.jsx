@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { useCart } from '@/context/CartContext';
 import socket from '@/app/utils/socket.config';
 import { useSession } from '@/context/SessionContext';
@@ -9,23 +9,48 @@ import api from '@/app/utils/axios.config';
 
 function Sell() {
 
-    const { cart, emptyCart } = useCart();
+    const isProcessing = useRef(false);
+
+    const { cart, emptyCart, removeProductById } = useCart();
     const {user} = useSession();
 
     const handleAdd = async(e, prod)=>{
         e.preventDefault();
-        socket.emit('addToCart', {cid: user.cart._id, pid: prod.product._id, quantity: 1});
+        if (isProcessing.current) return;
+        isProcessing.current = true;
+        if (prod.quantity + 1 <= prod.product.stock) {
+            socket.emit('addToCart', {cid: user.cart._id, pid: prod.product._id, quantity: 1});
+        }
+    
+        setTimeout(() => isProcessing.current = false, 300); 
     }
 
     const handleRemove = async(e, prod)=>{
         e.preventDefault();
-        socket.emit('addToCart', {cid:user.cart._id, pid: prod.product._id, quantity: -1});
+        if (isProcessing.current) return;
+        isProcessing.current = true;
+        if (prod.quantity - 1 > 0) {
+            socket.emit('addToCart', {cid: user.cart._id, pid: prod.product._id, quantity: -1});
+        }
+    
+        setTimeout(() => isProcessing.current = false, 300);
     }
 
     const clearCart = async(e)=>{
         e.preventDefault();
         const response = await emptyCart(user.cart._id);
         toast.success(response.message, {
+            duration:3000,
+            pauseOnHover:false,
+            closeButton:false,
+            hideProgressBar:true
+        })
+    }
+
+    const removeProduct = async(e, pid)=>{
+        e.preventDefault();
+        const response = await removeProductById(pid);
+        toast.success('Producto eliminado de la venta', {
             duration:3000,
             pauseOnHover:false,
             closeButton:false,
@@ -66,7 +91,8 @@ function Sell() {
                             <tbody>
                                 {cart.products?.map((value, index) => (
                                     <tr key={index} className="border-b">
-                                        <td className="w-1/5 p-2 text-left">{value.product.code}</td>
+                                        {/* <td className="w-1/5 p-2"><button className='bg-red-600 p-1 text-white' >X</button></td> */}
+                                        <td className="w-1/5 p-2 text-left"><button onClick={(e)=> removeProduct(e, value.product._id)} className='p-1 bg-red-600 text-white font-bold rounded cursor-pointer'>X</button> {value.product.code}</td>
                                         <td className="w-1/5 p-2 text-left">{value.product.title}</td>
                                         <td className="w-1/5 p-2 text-center">
                                             <div className='flex justify-center'>
@@ -82,6 +108,7 @@ function Sell() {
                                             </div></td>
                                         <td className="w-1/5 p-2 text-right">$ {value.product.sellingPrice.toFixed(2)}</td>
                                         <td className="w-1/5 p-2 text-right">$ {value.totalPrice.toFixed(2)}</td>
+                                        
                                     </tr>
                                 ))}
                             </tbody>

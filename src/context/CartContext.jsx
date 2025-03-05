@@ -32,6 +32,19 @@ export const CartProvider = ({children}) => {
         }
     }
 
+    const removeProductById = async(pid)=>{
+        try {
+            const response = await api.put(`/api/cart/remove/prod/${user.cart._id}`, {pid: pid});
+            const data = response.data;
+            if(data.status === 'success'){
+                setCart(data.payload);
+                return data;
+            }
+        } catch (error) {
+            return error;
+        }
+    }
+
     useEffect(()=>{
         if(user){
             fetchCart(user.cart._id);
@@ -45,7 +58,7 @@ export const CartProvider = ({children}) => {
     })
 
     return (
-        <CartContext.Provider value={{cart, emptyCart, setCart}}>
+        <CartContext.Provider value={{cart, emptyCart, setCart, removeProductById}}>
                 {children}
         </CartContext.Provider>
     )
