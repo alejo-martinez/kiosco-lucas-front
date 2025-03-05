@@ -50,7 +50,7 @@ function Payment() {
     }, [cart.products]);
 
     return (
-        <div className='flex flex-col justify-self-end border w-sm p-2 rounded gap-4'>
+        <div className='flex flex-col justify-self-end border-l h-screen w-fit p-2 rounded gap-4'>
             <div className='flex justify-between'>
                 <h4 className='text-3xl'>Total a pagar:</h4>
                 <span className='text-3xl'>${amount}</span>
