@@ -8,7 +8,8 @@ import Link from 'next/link';
 
 function AddProduct() {
 
-    const [producto, setProducto] = useState({ title: '', costPrice: 0, sellingPrice: 0, stock: 0, totalStock: 0, percentage: 0, code: '' });
+    const [producto, setProducto] = useState({ title: '', costPrice: 0, sellingPrice: 0, stock: 0, totalStock: 0, percentage: 0});
+    const [code, setCode] = useState('');
     // const setStockPrice
     const handleChange = (e) => {
         e.preventDefault();
@@ -24,25 +25,53 @@ function AddProduct() {
         }
     }
 
-    const createProduct = async (e) => {
+    const handleChangeCode = (e) =>{
+        setCode(e.target.value);
+    }
+
+    const handleEnterProduct = async(e) =>{
         try {
-            e.preventDefault();
-            const response = await api.post('/api/products/create', producto);
-            const data = response.data;
-            if (data.status === 'success') {
-                toast.success(data.message, {
-                    duration: 1000,
-                    pauseOnHover: false,
-                    closeButton: false,
-                    hideProgressBar: true
-                })
-                setProducto({ title: '', costPrice: 0, sellingPrice: 0, stock: 0, totalStock: 0, percentage: 0, code: '' })
+            if(e.key === 'Enter'){
+                // setCode(e.target.value)
+                const newProd = {...producto, code: e.target.value};
+                const response = await api.post('/api/products/create', newProd);
+                const data = response.data;
+                if(data.status === 'success') {
+                    toast.success(data.message, {
+                        duration: 1000,
+                        pauseOnHover:false,
+                        closeButton:false,
+                        hideProgressBar:true
+                    })
+                }
+                setProducto({ title: '', costPrice: 0, sellingPrice: 0, stock: 0, totalStock: 0, percentage: 0});
+                setCode('');
             }
+            
         } catch (error) {
-            console.log(error)
-            toast.error(error.error)
+            toast.error(error.message);
         }
     }
+
+    // const createProduct = async (e) => {
+    //     try {
+    //         e.preventDefault();
+    //         const response = await api.post('/api/products/create', producto);
+    //         const data = response.data;
+    //         if (data.status === 'success') {
+    //             toast.success(data.message, {
+    //                 duration: 1000,
+    //                 pauseOnHover: false,
+    //                 closeButton: false,
+    //                 hideProgressBar: true
+    //             })
+    //             setProducto({ title: '', costPrice: 0, sellingPrice: 0, stock: 0, totalStock: 0, percentage: 0})
+    //         }
+    //     } catch (error) {
+    //         console.log(error)
+    //         toast.error(error.error)
+    //     }
+    // }
 
     return (
         <div>
@@ -53,14 +82,14 @@ function AddProduct() {
                 <form className="space-y-4">
                     <div className="flex flex-col">
                         <label className="text-gray-600">Nombre del producto</label>
-                        <input type="text" name="title" className="border rounded p-2" onChange={handleChange} />
+                        <input type="text" name="title" className="border rounded p-2" onChange={handleChange} value={producto.title}/>
                     </div>
                     <div className="flex flex-col">
                         <label className="text-gray-600">Precio de costo</label>
                         <input
                             type="number"
                             name="costPrice"
-                            // value={costPrice}
+                            value={producto.costPrice}
                             onChange={handleChange}
                             className="border rounded p-2"
                         />
@@ -77,11 +106,11 @@ function AddProduct() {
                     </div>
                     <div className="flex flex-col">
                         <label className="text-gray-600">Stock en tienda</label>
-                        <input type="number" name="stock" className="border rounded p-2" onChange={handleChange} />
+                        <input type="number" name="stock" className="border rounded p-2" onChange={handleChange} value={producto.stock}/>
                     </div>
                     <div className="flex flex-col">
                         <label className="text-gray-600">Total stock</label>
-                        <input type="number" name="totalStock" className="border rounded p-2" onChange={handleChange} />
+                        <input type="number" name="totalStock" className="border rounded p-2" onChange={handleChange} value={producto.totalStock}/>
                     </div>
                     <div className="flex flex-col">
                         <label className="text-gray-600">Porcentaje de ganancia</label>
@@ -95,17 +124,17 @@ function AddProduct() {
                     </div>
                     <div className="flex flex-col">
                         <label className="text-gray-600">Código</label>
-                        <input type="number" name="code" className="border rounded p-2" onChange={handleChange} />
+                        <input type="number" name="code" value={code} className="border rounded p-2" onChange={handleChangeCode} onKeyDown={handleEnterProduct}/>
                     </div>
                     {/* {error && <div className="text-red-600 text-sm">{error}</div>} */}
-                    <div className="text-center">
+                    {/* <div className="text-center">
                         <button
                             onClick={createProduct}
                             className="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-700 transition"
                         >
                             Crear producto
                         </button>
-                    </div>
+                    </div> */}
                 </form>
             </div>
         </div>

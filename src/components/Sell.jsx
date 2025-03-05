@@ -80,8 +80,8 @@ function Sell() {
                                                     <button className='ml-1 cursor-pointer' onClick={(e)=> handleAdd(e, value)}>+</button>
                                                 }
                                             </div></td>
-                                        <td className="w-1/5 p-2 text-right">$ {value.product.sellingPrice}</td>
-                                        <td className="w-1/5 p-2 text-right">$ {value.totalPrice}</td>
+                                        <td className="w-1/5 p-2 text-right">$ {value.product.sellingPrice.toFixed(2)}</td>
+                                        <td className="w-1/5 p-2 text-right">$ {value.totalPrice.toFixed(2)}</td>
                                     </tr>
                                 ))}
                             </tbody>
