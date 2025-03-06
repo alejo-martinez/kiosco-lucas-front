@@ -37,9 +37,12 @@ function NavBar() {
       {user &&  
         <div className='flex flex-col justify-end p-3'>
             <span>Usuario activo: {user.name}</span>
-            <button onClick={closeSession} className='rounded bg-red-700 text-white hover:cursor-pointer'>Cerrar sesión</button>
+            <button onClick={closeSession} className='rounded w-fit p-1 bg-red-700 text-white hover:cursor-pointer'>Cerrar sesión</button>
             {user.role === 'admin' &&
+            <div className='flex flex-col'>
               <Link href={'/panel/add/product'} className='p-2 bg-blue-800 text-white rounded mt-3'>Agregar productos</Link>
+              <Link href={'/panel'} className='p-2 bg-blue-800 text-white rounded mt-3'>Panel de productos</Link>
+            </div>
             }
         </div>  
      }
