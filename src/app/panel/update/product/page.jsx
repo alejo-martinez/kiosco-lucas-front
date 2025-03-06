@@ -1,3 +1,5 @@
+'use client';
+
 import React, {useEffect, useState} from 'react';
 import api from '@/app/utils/axios.config';
 
