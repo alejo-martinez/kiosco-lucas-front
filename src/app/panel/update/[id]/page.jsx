@@ -16,6 +16,9 @@ function UpdateProductById() {
 
     const [producto, setProducto] = useState({});
     const [loading, setLoading] = useState(true);
+    const [sellingPrice, setSellingPrice] = useState(0);
+    const [percentage, setPercentage] = useState(0);
+    const [costPrice, setCostPrice] = useState(0);
 
     const fetchData = async () => {
         try {
@@ -23,36 +26,39 @@ function UpdateProductById() {
             const data = response.data;
             console.log(data);
             setProducto(data.payload);
+            setSellingPrice(data.payload.sellingPrice);
+            setPercentage(data.payload.percentage)
             setLoading(false)
         } catch (error) {
             console.log(error);
         }
     }
 
-      const closeSession = async(e)=>{
+    const closeSession = async (e) => {
         try {
-          e.preventDefault();
-          const response = await logout();
-          toast.success(response.message,{
-            closeButton:false,
-            duration: 1400,
-            hideProgressBar:true
-          })
-          setTimeout(()=>{
-            router.push('/login')
-          }, 1500)
+            e.preventDefault();
+            const response = await logout();
+            toast.success(response.message, {
+                closeButton: false,
+                duration: 1400,
+                hideProgressBar: true
+            })
+            setTimeout(() => {
+                router.push('/login')
+            }, 1500)
         } catch (error) {
-          toast.error(error,{
-            duration:3000,
-            hideProgressBar:true,
-            closeButton:true,
-            pauseOnHover:true
-          })
+            toast.error(error, {
+                duration: 3000,
+                hideProgressBar: true,
+                closeButton: true,
+                pauseOnHover: true
+            })
         }
-      }
+    }
 
     const updateProduct = async () => {
         try {
+            console.log(producto)
             const response = await api.put(`/api/products/full/${producto._id}`, { prod: producto })
             const data = response.data;
             toast.success(data.message, {
@@ -66,7 +72,39 @@ function UpdateProductById() {
     }
 
     const handleChange = (e) => {
-        setProducto({ ...producto, [e.target.name]: e.target.value });
+        const { name, value } = e.target;
+
+        setProducto((prevProducto) => {
+            const updatedProducto = { ...prevProducto, [name]: value };
+
+            if (name === 'costPrice' && prevProducto.percentage) {
+                const newSellingPrice = Number(value) + (Number(value) * (prevProducto.percentage / 100));
+                updatedProducto.sellingPrice = newSellingPrice;
+                setSellingPrice(newSellingPrice);
+            }
+
+            if (name === 'percentage' && prevProducto.costPrice) {
+                const newSellingPrice = Number(prevProducto.costPrice) + (Number(prevProducto.costPrice) * (value / 100));
+                updatedProducto.sellingPrice = newSellingPrice;
+                setSellingPrice(newSellingPrice);
+                setPercentage(value);
+            }
+
+            if (name === 'sellingPrice' && prevProducto.costPrice) {
+                const prod = { ...producto };
+                // const newPercentage = (Number((e.target.value - prod.costPrice) / prod.costPrice)) * 100;
+                const newPercentage = ((Number(value) - prevProducto.costPrice) / prevProducto.costPrice) * 100;
+                setSellingPrice(e.target.value)
+                setPercentage(newPercentage);
+                prod.percentage = newPercentage;
+                setProducto({ ...prod, [e.target.name]: e.target.value });
+
+                // updatedProducto.percentage = newPercentage;
+                // setPercentage(newPercentage);
+            }
+
+            return updatedProducto;
+        });
     }
 
     useEffect(() => {
@@ -109,11 +147,11 @@ function UpdateProductById() {
                         </div>
                         <div className='flex justify-between items-center gap-12'>
                             <label>Precio de venta</label>
-                            <input className='border p-1 rounded' type="text" name='sellingPrice' defaultValue={producto.sellingPrice} onChange={handleChange} />
+                            <input className='border p-1 rounded' type="text" name='sellingPrice' value={sellingPrice} onChange={handleChange} />
                         </div>
                         <div className='flex justify-between items-center gap-12'>
                             <label>Porcentaje de ganancia</label>
-                            <input className='border p-1 rounded' type="text" name='percentage' defaultValue={producto.percentage} onChange={handleChange} />
+                            <input className='border p-1 rounded' type="text" name='percentage' value={percentage} onChange={handleChange} />
                         </div>
                         <div className='flex justify-between items-center gap-12'>
                             <label>Código</label>

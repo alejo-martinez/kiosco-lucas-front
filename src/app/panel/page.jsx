@@ -8,6 +8,7 @@ import { toast } from 'react-toastify';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import { ChevronLeftIcon, ChevronRightIcon } from "@heroicons/react/24/solid";
+import socket from '../utils/socket.config';
 
 function Panel() {
 
@@ -19,6 +20,7 @@ function Panel() {
     const [products, setProducts] = useState([]);
     const [loading, setLoading] = useState(true);
     const [setings, setSetings] = useState({});
+    const [code, setCode] = useState('');
 
     const fetchData = async () => {
         try {
@@ -33,9 +35,45 @@ function Panel() {
         }
     }
 
-    const updateProd = (e, id)=>{
+    const handleChange = (e) =>{
+        setCode(e.target.value);
+    }
+
+    const updateProd = (e, id) => {
         e.preventDefault();
         router.push(`/panel/update/${id}`);
+    }
+
+    const deleteProduct = async (e, id, index) => {
+        try {
+            e.preventDefault();
+            const response = await api.delete(`/api/products/delete/${id}`)
+            const data = response.data;
+            toast.success(data.message, {
+                duration: 2000,
+                pauseOnHover: false,
+                hideProgressBar: true,
+                closeButton: false
+            });
+            const prods = [...products];
+            prods.slice(index, 1);
+            setProducts(prods);
+        } catch (error) {
+            toast.error(error.message, {
+                duration: 3000,
+                pauseOnHover: true,
+                hideProgressBar: true,
+                closeButton: true
+            })
+        }
+    }
+
+    const handleSearchProductByCode = (e) => {
+        // e.preventDefault();
+        if (e.key === 'Enter') {
+            socket.emit('searchByCode', { code: e.target.value });
+        }
+
     }
 
     const closeSession = async (e) => {
@@ -60,6 +98,21 @@ function Panel() {
         }
     }
 
+    useEffect(()=> {
+        socket.on('resultTitle', data => {
+            if(data.results.length === 0){
+                toast.error('No hay resultados disponibles', {
+                    duration: 3000,
+                    pauseOnHover:false,
+                    hideProgressBar:true
+                })
+            } else {
+                // console.log(data.results);
+                router.push(`/panel/update/${data.results[0]._id}`)
+            }
+        })
+    })
+
     useEffect(() => {
         fetchData();
     }, [paramValue]);
@@ -69,7 +122,11 @@ function Panel() {
             {loading ? <p>Cargando...</p>
                 :
                 <div>
-                    <div className='flex justify-center'>
+                    <div className='flex justify-center gap-4 mt-4 items-center'>
+                        <label>Buscar producto</label>
+                        <input type="text" name='code' value={code} onChange={handleChange} className='border p-1 rounded' onKeyDown={handleSearchProductByCode} />
+                    </div>
+                    <div className='flex justify-self-end'>
                         {user &&
                             <div className='flex flex-col justify-end p-3'>
                                 <span>Usuario activo: {user.name}</span>
@@ -82,7 +139,7 @@ function Panel() {
                     </div>
                     <div>
                         <div>
-                            <div className='flex justify-center items-center mt-12'>
+                            <div className='flex justify-center items-center mt-12 mb-10'>
                                 {setings?.hasPrevPage &&
                                     <div className='flex'>
                                         <button className='text-slate-800 mr-4'>
@@ -127,8 +184,8 @@ function Panel() {
                                         <tr key={index} className="border-b">
                                             <td className="w-1/5 p-2 text-center flex items-center gap-2">
                                                 <div className='flex flex-col gap-2'>
-                                                    <button title='Editar' className='p-1 bg-blue-600 text-white font-bold rounded cursor-pointer' onClick={(e)=> updateProd(e, value._id)}>I</button>
-                                                    <button title='Eliminar' className='p-1 bg-red-600 text-white font-bold rounded cursor-pointer'>X</button>
+                                                    <button title='Editar' className='p-1 bg-blue-600 text-white font-bold rounded cursor-pointer' onClick={(e) => updateProd(e, value._id)}>I</button>
+                                                    <button title='Eliminar' className='p-1 bg-red-600 text-white font-bold rounded cursor-pointer' onClick={(e) => deleteProduct(e, value._id, index)}>X</button>
                                                 </div>
                                                 {value.code}</td>
                                             <td className="w-1/5 p-2 text-center">{value.title}</td>

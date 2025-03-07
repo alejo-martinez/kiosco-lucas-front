@@ -99,9 +99,9 @@ function Search() {
         <div className='flex flex-col justify-center gap-y-10'>
             {!lectorDesactivated ?
                 <div className='flex justify-center gap-4 mt-4'>
-                    {/* <input type="text" name='query' className='border p-1 rounded' onChange={handleQuery}/> */}
+                    
                     <input type="text" name='query' className='border p-1 rounded' onChange={handleChangeEmptyInput} onKeyDown={searchByCode ? handleSearchProductByCode : handleSearchByCode} />
-                    {/* <button onClick={handleSearchByCode}>Buscar</button> */}
+                    
                     <div className='flex flex-col gap-2 items-center'>
                         <div className='flex items-center gap-2'>
                             <label>Desactivar lector</label>
