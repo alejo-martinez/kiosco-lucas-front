@@ -1,12 +1,14 @@
 'use client';
 
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import socket from '@/app/utils/socket.config';
 import { useSession } from '@/context/SessionContext';
 import { toast } from 'react-toastify';
 import { useCart } from '@/context/CartContext';
 
 function Search() {
+
+    const inputRef = useRef(null);
 
     const { user } = useSession();
     const { cart } = useCart();
@@ -16,6 +18,22 @@ function Search() {
     const [searchByCode, setSearchByCode] = useState(false);
     const [querySearch, setQuerySearch] = useState('');
 
+
+    useEffect(()=>{
+        const focusInpt = ()=>{
+            if(inputRef.current){
+                inputRef.current.focus();
+            }
+        }
+
+        document.addEventListener("click", focusInpt);
+        document.addEventListener("keydown", focusInpt);
+
+        return ()=>{
+            document.removeEventListener("click", focusInpt);
+            document.removeEventListener("keydown", focusInpt);
+        }
+    }, [])
 
     const handleChecked = (e) => {
         if (!e.target.checked) {
@@ -59,9 +77,10 @@ function Search() {
     }
 
     const handleSearchByCode = async (e) => {
-        if (e.key === 'Enter') {
+        if (e.key === 'Enter' && inputRef.current.value.trim() !== "") {
             socket.emit('search', { query: e.target.value, cid: user.cart._id, quantity: 1 });
-            e.target.value = '';
+            // e.target.value = '';
+            inputRef.current.value ="";
         }
     }
 
@@ -100,7 +119,7 @@ function Search() {
             {!lectorDesactivated ?
                 <div className='flex justify-center gap-4 mt-4'>
                     
-                    <input type="text" name='query' className='border p-1 rounded' onChange={handleChangeEmptyInput} onKeyDown={searchByCode ? handleSearchProductByCode : handleSearchByCode} />
+                    <input type="text" name='query' className='border p-1 rounded' onChange={handleChangeEmptyInput} onKeyDown={searchByCode ? handleSearchProductByCode : handleSearchByCode} ref={searchByCode ? null : inputRef} autoFocus={searchByCode? false : true}/>
                     
                     <div className='flex flex-col gap-2 items-center'>
                         <div className='flex items-center gap-2'>

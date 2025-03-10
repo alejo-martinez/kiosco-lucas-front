@@ -2,11 +2,15 @@ import Payment from "@/components/Payment";
 import NavBar from "@/components/NavBar";
 import Sell from "@/components/Sell";
 import Search from "@/components/Search";
+import Sidebar from "@/components/Sidebar";
 
 export default function Home() {
   return (
     <div className="flex flex-col gap-y-20">
       <div className="flex flex-row w-full">
+        <div>
+          <Sidebar />
+        </div>
         <div className="flex-grow">
           <Search />
         </div>

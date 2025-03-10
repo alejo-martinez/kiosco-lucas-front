@@ -92,15 +92,12 @@ function UpdateProductById() {
 
             if (name === 'sellingPrice' && prevProducto.costPrice) {
                 const prod = { ...producto };
-                // const newPercentage = (Number((e.target.value - prod.costPrice) / prod.costPrice)) * 100;
                 const newPercentage = ((Number(value) - prevProducto.costPrice) / prevProducto.costPrice) * 100;
                 setSellingPrice(e.target.value)
                 setPercentage(newPercentage);
                 prod.percentage = newPercentage;
                 setProducto({ ...prod, [e.target.name]: e.target.value });
 
-                // updatedProducto.percentage = newPercentage;
-                // setPercentage(newPercentage);
             }
 
             return updatedProducto;

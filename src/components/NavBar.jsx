@@ -41,7 +41,7 @@ function NavBar() {
             {user.role === 'admin' &&
             <div className='flex flex-col'>
               <Link href={'/panel/add/product'} className='p-2 bg-blue-800 text-white rounded mt-3'>Agregar productos</Link>
-              <Link href={'/panel'} className='p-2 bg-blue-800 text-white rounded mt-3'>Panel de productos</Link>
+              {/* <Link href={'/panel'} className='p-2 bg-blue-800 text-white rounded mt-3'>Panel de productos</Link> */}
             </div>
             }
         </div>  
