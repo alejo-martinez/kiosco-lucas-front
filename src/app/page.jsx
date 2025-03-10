@@ -17,9 +17,9 @@ export default function Home() {
 
         <div className="flex flex-col gap-4 w-fit content-end flex-wrap">
 
-            <NavBar />
+          <NavBar />
 
-            <Payment />
+          <Payment />
 
         </div>
       </div>
