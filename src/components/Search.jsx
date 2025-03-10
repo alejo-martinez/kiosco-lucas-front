@@ -77,10 +77,10 @@ function Search() {
     }
 
     const handleSearchByCode = async (e) => {
-        if (e.key === 'Enter' && inputRef.current.value.trim() !== "") {
+        if (e.key === 'Enter') {
             socket.emit('search', { query: e.target.value, cid: user.cart._id, quantity: 1 });
             // e.target.value = '';
-            inputRef.current.value ="";
+            // inputRef.current.value ="";
         }
     }
 
