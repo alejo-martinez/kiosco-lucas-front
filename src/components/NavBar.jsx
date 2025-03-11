@@ -1,51 +1,41 @@
 'use client';
 
-import React, {useState} from 'react';
+import React, { useEffect, useState } from 'react';
 import { useSession } from '@/context/SessionContext';
 import { toast } from 'react-toastify';
 import { useRouter } from 'next/navigation';
-import Link from 'next/link';
+
+import Search from './Search';
 
 function NavBar() {
 
-  const {user, logout} = useSession();
   const router = useRouter();
-  const closeSession = async(e)=>{
-    try {
-      e.preventDefault();
-      const response = await logout();
-      toast.success(response.message,{
-        closeButton:false,
-        duration: 1400,
-        hideProgressBar:true
-      })
-      setTimeout(()=>{
-        router.push('/login')
-      }, 1500)
-    } catch (error) {
-      toast.error(error,{
-        duration:3000,
-        hideProgressBar:true,
-        closeButton:true,
-        pauseOnHover:true
-      })
-    }
-  }
+
+  const { user } = useSession();
+
+  const [actualDate, setActualDate] = useState(null);
+
+
+  const formatDateForUser = () => {
+    const date = new Date();
+    const options = { weekday: "long", day: "numeric", month: "long" };
+    setActualDate(date.toLocaleDateString("es-ES", options))
+  };
+  useEffect(()=>{
+    formatDateForUser();
+  },[]);
 
   return (
-    <div className='flex justify-center'>
-      {user &&  
-        <div className='flex flex-col justify-end p-3'>
-            <span>Usuario activo: {user.name}</span>
-            <button onClick={closeSession} className='rounded w-fit p-1 bg-red-700 text-white hover:cursor-pointer'>Cerrar sesión</button>
-            {user.role === 'admin' &&
-            <div className='flex flex-col'>
-              <Link href={'/panel/add/product'} className='p-2 bg-blue-800 text-white rounded mt-3'>Agregar productos</Link>
-              {/* <Link href={'/panel'} className='p-2 bg-blue-800 text-white rounded mt-3'>Panel de productos</Link> */}
-            </div>
-            }
-        </div>  
-     }
+    <div className='flex'>
+      <div className='flex flex-grow justify-center'>
+        <Search />
+      </div>
+      {user &&
+        <div className='flex flex-col justify-self-end p-3'>
+          <span>Usuario activo: {user.name}</span>
+          <span>{actualDate}</span>
+        </div>
+      }
     </div>
   )
 }

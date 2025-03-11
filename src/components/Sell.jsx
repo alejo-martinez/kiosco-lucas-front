@@ -6,6 +6,7 @@ import socket from '@/app/utils/socket.config';
 import { useSession } from '@/context/SessionContext';
 import { toast } from 'react-toastify';
 import api from '@/app/utils/axios.config';
+import Results from './Results';
 
 function Sell() {
 
@@ -119,8 +120,11 @@ function Sell() {
                     </div>
                 }
             </div>
+            <div className='flex justify-center mt-10'>
+            <Results />
+            </div>
         </div>
     )
 }
 
-export default Sell
+export default Sell;

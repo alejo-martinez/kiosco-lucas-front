@@ -3,6 +3,7 @@ import "./globals.css";
 import { SessionProvider } from "@/context/SessionContext";
 import { CartProvider } from "@/context/CartContext";
 import { ToastContainer } from "react-toastify";
+import { ProductProvider } from "@/context/ProductContext";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -26,10 +27,12 @@ export default function RootLayout({ children }) {
         className={`${geistSans.variable} ${geistMono.variable} antialiased`}
       >
         <SessionProvider>
-          <CartProvider>
-            {children}
-            <ToastContainer />
-          </CartProvider>
+          <ProductProvider>
+            <CartProvider>
+              {children}
+              <ToastContainer />
+            </CartProvider>
+          </ProductProvider>
         </SessionProvider>
       </body>
     </html>

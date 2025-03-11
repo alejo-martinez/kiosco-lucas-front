@@ -9,35 +9,54 @@ function Payment() {
     const [amount, setAmount] = useState(0);
     const [paymentMethod, setPaymentMethod] = useState('eft');
     const [payment, setPayment] = useState(0);
+    // const [pay, setPay] = useState(0);
+    const [vuelto, setVuelto] = useState(0);
 
     const { cart, setCart } = useCart();
 
-    const handleChange = (e)=>{
+    const handleChange = (e) => {
         e.preventDefault();
         setPaymentMethod(e.target.value);
     }
 
-    const handlePayment = (e)=>{
-        e.preventDefault();
+    const handlePayment = (e) => {
+        // e.preventDefault();
         setPayment(e.target.value);
     }
 
-    const completeSell = async(e)=>{
+    const cleanVuelto = () => {
+        setVuelto(0);
+    }
+
+    const completeSell = async (e) => {
         try {
             e.preventDefault();
-            const response = await api.post('/api/ticket/create', {amount: amount, payment_method: paymentMethod});
+            if (payment > 0) {
+                const vueltoResult = Number(payment) - Number(amount);
+                if(vueltoResult < 0) throw new Error('Monto para abonar insuficente')
+                if (vueltoResult > 0) setVuelto(vueltoResult)
+            }
+            const response = await api.post('/api/ticket/create', { amount: amount, payment_method: paymentMethod });
             const data = response.data;
-            toast.success(data.message,{
-                duration:2000,
-                closeButton:true,
-                hideProgressBar:true
+            toast.success(data.message, {
+                duration: 2000,
+                closeButton: true,
+                hideProgressBar: true
             })
+            setPayment(0)
             setAmount(0);
             setCart(data.payload)
-        } catch (error) {  
-            toast.error('Error: ' + error.message,{
-                duration:3000
-            })
+        } catch (error) {
+            if(error.response){
+                toast.error(error.response.data.error, {
+                    duration: 3000
+                })
+            }
+            else{
+                toast.error(error.message, {
+                    duration: 3000
+                })
+            }
         }
     }
 
@@ -55,12 +74,21 @@ function Payment() {
                 <h4 className='text-3xl'>Total a pagar:</h4>
                 <span className='text-3xl'>${amount}</span>
             </div>
-            <div className='flex justify-between items-center'>
-                <span className='text-2xl'>Abona:</span>
-                <div className='flex items-center justify-end'>
-                    <span className='font-bold text-xl mr-1'>$</span>
-                    <input type="number" className='border rounded w-2/5 p-1' onChange={handlePayment}/>
+            <div className='flex flex-col justify-between items-center gap-6'>
+                <div className='flex'>
+
+                    <span className='text-2xl'>Abona:</span>
+                    <div className='flex items-center justify-end'>
+                        <span className='font-bold text-xl mr-1'>$</span>
+                        <input type="number" name='pay' value={payment} className='border rounded w-2/5 p-1' onChange={handlePayment} />
+                    </div>
                 </div>
+                {vuelto > 0 &&
+                    <div className='flex flex-col'>
+                        <span>Vuelto: ${vuelto}</span>
+                        <button onClick={cleanVuelto} className='bg-blue-600 p-1 rounded text-white cursor-pointer'>Limpiar</button>
+                    </div>
+                }
             </div>
             <div className='flex justify-between'>
                 <span>Medio de pago:</span>
@@ -72,8 +100,8 @@ function Payment() {
                 </select>
             </div>
             <div className='flex flex-col gap-4'>
-                <button className='border rounded p-1 w-fit bg-green-500 text-white border-black transition-all duration-300 hover:cursor-pointer hover:bg-green-900 hover:cursor-pointer' >Realizar venta</button>
-                <button className='border rounded p-1 w-fit bg-blue-500 text-white border-black transition-all duration-300 hover:cursor-pointer hover:bg-blue-900' onClick={completeSell}>Realizar venta con pago justo</button>
+                <button className='border rounded p-1 w-fit bg-green-500 text-white border-black transition-all duration-300 hover:cursor-pointer hover:bg-green-900 hover:cursor-pointer' onClick={completeSell}>Realizar venta</button>
+                {/* <button className='border rounded p-1 w-fit bg-blue-500 text-white border-black transition-all duration-300 hover:cursor-pointer hover:bg-blue-900' onClick={completeSell}>Realizar venta con pago justo</button> */}
             </div>
         </div>
     )

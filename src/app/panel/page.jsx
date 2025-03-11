@@ -9,6 +9,7 @@ import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import { ChevronLeftIcon, ChevronRightIcon } from "@heroicons/react/24/solid";
 import socket from '../utils/socket.config';
+import Sidebar from '@/components/Sidebar';
 
 function Panel() {
 
@@ -17,6 +18,7 @@ function Panel() {
     const searchParams = useSearchParams();
     const paramValue = searchParams.get("query");
 
+    const [actualDate, setActualDate] = useState(null);
     const [products, setProducts] = useState([]);
     const [loading, setLoading] = useState(true);
     const [setings, setSetings] = useState({});
@@ -35,7 +37,7 @@ function Panel() {
         }
     }
 
-    const handleChange = (e) =>{
+    const handleChange = (e) => {
         setCode(e.target.value);
     }
 
@@ -71,45 +73,44 @@ function Panel() {
     const handleSearchProductByCode = (e) => {
         // e.preventDefault();
         if (e.key === 'Enter') {
-            socket.emit('searchByCode', { code: e.target.value });
+            socket.emit('searchCodeUpdate', { code: e.target.value });
         }
 
     }
 
-    const closeSession = async (e) => {
-        try {
-            e.preventDefault();
-            const response = await logout();
-            toast.success(response.message, {
-                closeButton: false,
-                duration: 1400,
-                hideProgressBar: true
-            })
-            setTimeout(() => {
-                router.push('/login')
-            }, 1500)
-        } catch (error) {
-            toast.error(error, {
-                duration: 3000,
-                hideProgressBar: true,
-                closeButton: true,
-                pauseOnHover: true
-            })
-        }
-    }
 
-    useEffect(()=> {
-        socket.on('resultTitle', data => {
-            if(data.results.length === 0){
+
+    const formatDateForUser = () => {
+        const date = new Date();
+        const options = { weekday: "long", day: "numeric", month: "long" };
+        setActualDate(date.toLocaleDateString("es-ES", options))
+    };
+
+    useEffect(() => {
+        formatDateForUser();
+    }, []);
+
+    useEffect(() => {
+        socket.on('resultCodeUpdate', data => {
+            console.log(data)
+            if (!data.producto) {
                 toast.error('No hay resultados disponibles', {
                     duration: 3000,
-                    pauseOnHover:false,
-                    hideProgressBar:true
+                    pauseOnHover: false,
+                    hideProgressBar: true
                 })
             } else {
                 // console.log(data.results);
-                router.push(`/panel/update/${data.results[0]._id}`)
+                router.push(`/panel/update/${data.producto._id}`)
             }
+        })
+
+        socket.on('errorCodeUpdate', data=>{
+            toast.error(data.error,{
+                duration:2000,
+                hideProgressBar:true,
+                pauseOnHover:false
+            })
         })
     })
 
@@ -121,23 +122,26 @@ function Panel() {
         <div>
             {loading ? <p>Cargando...</p>
                 :
-                <div>
-                    <div className='flex justify-center gap-4 mt-4 items-center'>
-                        <label>Buscar producto</label>
-                        <input type="text" name='code' value={code} onChange={handleChange} className='border p-1 rounded' onKeyDown={handleSearchProductByCode} />
+                <div className='grid grid-cols-[0.2fr_4fr_1.5fr] grid-rows-[auto_1fr_auto] h-screen gap-2 p-2'>
+                    <div className='row-span-2 bg-gray-200 p-4'>
+                        <Sidebar />
                     </div>
-                    <div className='flex justify-self-end'>
+                    <div className='flex col-span-2 bg-gray-200 p-4'>
+                        <div className='flex flex-grow justify-center'>
+
+                            <div className='flex justify-center gap-4 mt-4 items-center'>
+                                <label>Buscar producto</label>
+                                <input type="text" name='code' value={code} onChange={handleChange} className='border p-1 rounded' onKeyDown={handleSearchProductByCode} />
+                            </div>
+                        </div>
                         {user &&
-                            <div className='flex flex-col justify-end p-3'>
+                            <div className='flex flex-col justify-self-end p-3'>
                                 <span>Usuario activo: {user.name}</span>
-                                <button onClick={closeSession} className='rounded bg-red-700 text-white hover:cursor-pointer'>Cerrar sesión</button>
-                                {user.role === 'admin' &&
-                                    <Link href={'/'} className='p-2 text-center bg-blue-800 text-white rounded mt-3'>Inicio</Link>
-                                }
+                                <span>{actualDate}</span>
                             </div>
                         }
                     </div>
-                    <div>
+                    <div className='col-span-2'>
                         <div>
                             <div className='flex justify-center items-center mt-12 mb-10'>
                                 {setings?.hasPrevPage &&
