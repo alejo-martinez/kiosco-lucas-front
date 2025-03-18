@@ -10,6 +10,8 @@ import Link from 'next/link';
 import { ChevronLeftIcon, ChevronRightIcon } from "@heroicons/react/24/solid";
 import socket from '../utils/socket.config';
 import Sidebar from '@/components/Sidebar';
+import AdminRoute from '@/components/AdminRoute';
+import { generatePDF } from '../utils/generatePdf';
 
 function Panel() {
 
@@ -34,6 +36,22 @@ function Panel() {
             setLoading(false);
         } catch (error) {
             console.log(error);
+        }
+    }
+
+    const downloadProducts = async(e)=>{
+        e.preventDefault();
+        const response = await api.get(`/api/products/`);
+        const data = response.data;
+        if(data.status === 'success'){
+            toast.success('Comenzando la descarga',{
+                duration:2000,
+                pauseOnFocusLoss:false,
+                pauseOnHover:false,
+                hideProgressBar:true,
+                closeButton:false
+            })
+            generatePDF(data.payload);
         }
     }
 
@@ -100,7 +118,6 @@ function Panel() {
                     hideProgressBar: true
                 })
             } else {
-                // console.log(data.results);
                 router.push(`/panel/update/${data.producto._id}`)
             }
         })
@@ -138,6 +155,7 @@ function Panel() {
                             <div className='flex flex-col justify-self-end p-3'>
                                 <span>Usuario activo: {user.name}</span>
                                 <span>{actualDate}</span>
+                                <button onClick={downloadProducts} className='p-1 bg-blue-700 text-white rounded cursor-pointer'>Generar pdf</button>
                             </div>
                         }
                     </div>
@@ -210,4 +228,4 @@ function Panel() {
     )
 }
 
-export default Panel;
+export default AdminRoute(Panel);

@@ -2,11 +2,13 @@
 
 import React from 'react';
 import { useSession } from '@/context/SessionContext';
-import { HomeIcon, Cog8ToothIcon, BanknotesIcon, PlusCircleIcon } from '@heroicons/react/24/solid';
+import { HomeIcon, Cog8ToothIcon, BanknotesIcon, PlusCircleIcon, ClipboardIcon } from '@heroicons/react/24/solid';
 import Link from 'next/link';
+import { toast } from 'react-toastify';
+import { useRouter } from 'next/navigation';
 
 function Sidebar() {
-
+    const router = useRouter()
     const { user, logout } = useSession();
 
     const closeSession = async (e) => {
@@ -41,27 +43,38 @@ function Sidebar() {
                         Inicio
                     </Link>
                 </div>
-                <div className='flex items-center'>
+                { user && 
+                user.role === 'admin' &&
+                    <div>
 
-                    <Link href={"/panel"} className='text-center'>
-                        <Cog8ToothIcon width={50} />
-                        Panel
-                    </Link>
-                </div>
-                <div className='flex items-center'>
+                        <div className='flex items-center'>
 
-                    <Link href={"/sells"} className='text-center'>
-                        <BanknotesIcon width={50} />
-                        Ventas
-                    </Link>
-                </div>
-                <div className='flex items-center'>
+                            <Link href={"/panel"} className='text-center'>
+                                <Cog8ToothIcon width={50} />
+                                Panel
+                            </Link>
+                        </div>
+                        <div className='flex items-center'>
 
-                    <Link href={"/panel/add/product"} className='text-center'>
-                        <PlusCircleIcon width={50} />
-                        Crear
-                    </Link>
-                </div>
+                            <Link href={"/sells"} className='text-center'>
+                                <BanknotesIcon width={50} />
+                                Ventas
+                            </Link>
+                        </div>
+                        <div className='flex items-center'>
+                            <Link href={"/panel/add/product"} className='text-center'>
+                                <PlusCircleIcon width={50} />
+                                Crear
+                            </Link>
+                        </div>
+                        <div className='flex items-center'>
+                            <Link href={"/resumes/diary"} className='text-center'>
+                                <ClipboardIcon width={50} />
+                                Resúmenes
+                            </Link>
+                        </div>
+                    </div>
+                }
             </div>
             <div className='flex flex-wrap'>
                 <button onClick={closeSession} className='rounded w-fit p-1 bg-red-700 text-white hover:cursor-pointer'>Cerrar sesión</button>

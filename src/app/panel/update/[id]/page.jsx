@@ -8,6 +8,8 @@ import { useSession } from '@/context/SessionContext';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import Sidebar from '@/components/Sidebar';
+import socket from '@/app/utils/socket.config';
+import AdminRoute from '@/components/AdminRoute';
 
 function UpdateProductById() {
 
@@ -21,6 +23,8 @@ function UpdateProductById() {
     const [percentage, setPercentage] = useState(0);
     const [costPrice, setCostPrice] = useState(0);
     const [actualDate, setActualDate] = useState(null);
+    const [code, setCode] = useState('');
+
 
 
     const formatDateForUser = () => {
@@ -61,6 +65,18 @@ function UpdateProductById() {
         }
     }
 
+    const handleChangeCode = (e) => {
+        setCode(e.target.value);
+    }
+
+    const handleSearchProductByCode = (e) => {
+        // e.preventDefault();
+        if (e.key === 'Enter') {
+            socket.emit('searchCodeUpdate', { code: e.target.value });
+        }
+
+    }
+
     const handleChange = (e) => {
         const { name, value } = e.target;
 
@@ -94,6 +110,31 @@ function UpdateProductById() {
         });
     }
 
+    
+    useEffect(() => {
+        socket.on('resultCodeUpdate', data => {
+
+            if (!data.producto) {
+                toast.error('No hay resultados disponibles', {
+                    duration: 3000,
+                    pauseOnHover: false,
+                    hideProgressBar: true
+                })
+            } else {
+                router.push(`/panel/update/${data.producto._id}`)
+            }
+        })
+
+        socket.on('errorCodeUpdate', data=>{
+            toast.error(data.error,{
+                duration:2000,
+                hideProgressBar:true,
+                pauseOnHover:false
+            })
+        })
+    })
+
+
     useEffect(() => {
         fetchData();
     }, [id]);
@@ -106,14 +147,18 @@ function UpdateProductById() {
                     <div className='row-span-2 bg-gray-200 p-4'>
                         <Sidebar />
                     </div>
-                    <div className='flex col-span-2 bg-gray-200 p-4 justify-end'>
+                    <div className='flex col-span-2 bg-gray-200 p-4'>
+                        <div className='flex flex-grow justify-center'>
+
+                            <div className='flex justify-center gap-4 mt-4 items-center'>
+                                <label>Buscar producto</label>
+                                <input type="text" name='code' value={code} onChange={handleChangeCode} className='border p-1 rounded' onKeyDown={handleSearchProductByCode} />
+                            </div>
+                        </div>
                         {user &&
-                            <div className='flex flex-col p-3'>
+                            <div className='flex flex-col justify-self-end p-3'>
                                 <span>Usuario activo: {user.name}</span>
                                 <span>{actualDate}</span>
-                                <div className=''>
-                                    <Link href={"/panel"} className='text-center p-1 bg-blue-200 rounded font-bold'>Volver</Link>
-                                </div>
                             </div>
                         }
                     </div>
@@ -142,7 +187,7 @@ function UpdateProductById() {
                             </div>
                             <div className='flex justify-between items-center gap-12'>
                                 <label>Porcentaje de ganancia</label>
-                                <input className='border p-1 rounded' type="text" name='percentage' value={percentage} onChange={handleChange} />
+                                <input className='border p-1 rounded' type="text" name='percentage' value={percentage.toFixed(2)} onChange={handleChange} />
                             </div>
                             <div className='flex justify-between items-center gap-12'>
                                 <label>Código</label>
@@ -159,4 +204,4 @@ function UpdateProductById() {
     )
 }
 
-export default UpdateProductById;
+export default AdminRoute(UpdateProductById);

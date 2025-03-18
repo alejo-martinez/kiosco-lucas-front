@@ -4,6 +4,7 @@ import { SessionProvider } from "@/context/SessionContext";
 import { CartProvider } from "@/context/CartContext";
 import { ToastContainer } from "react-toastify";
 import { ProductProvider } from "@/context/ProductContext";
+import { ResumeProvider } from "@/context/ResumeContext";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -29,7 +30,9 @@ export default function RootLayout({ children }) {
         <SessionProvider>
           <ProductProvider>
             <CartProvider>
-              {children}
+              <ResumeProvider>
+                {children}
+              </ResumeProvider>
               <ToastContainer />
             </CartProvider>
           </ProductProvider>

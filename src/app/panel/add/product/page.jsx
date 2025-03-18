@@ -6,6 +6,7 @@ import { toast } from 'react-toastify';
 import Link from 'next/link';
 import Sidebar from '@/components/Sidebar';
 import { useSession } from '@/context/SessionContext';
+import AdminRoute from '@/components/AdminRoute';
 
 function AddProduct() {
 
@@ -148,4 +149,4 @@ function AddProduct() {
     )
 }
 
-export default AddProduct;
+export default AdminRoute(AddProduct);

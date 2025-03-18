@@ -17,6 +17,7 @@ export const SessionProvider = ({ children }) => {
             const response = await api.post(`${url}/api/session/login`, userLogin);
             const data = response.data;
             setUser(data.payload);
+            localStorage.setItem('user', JSON.stringify(data.payload));
             return data;
         } catch (error) {
             if(error.response){
@@ -50,6 +51,7 @@ export const SessionProvider = ({ children }) => {
             const response = await api.delete('/api/session/logout');
             const data = response.data;
             setUser(null)
+            localStorage.removeItem('user');
             return data;
         } catch (error) {
             if(error.response){
