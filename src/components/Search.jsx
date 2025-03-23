@@ -48,6 +48,7 @@ function Search() {
 
     const handleSearchByCode = async (e) => {
         if (e.key === 'Enter') {
+            console.log(user)
             socket.emit('search', { query: e.target.value, cid: user.cart, quantity: 1 });
             setQuerySearch('');
             // e.target.value = '';

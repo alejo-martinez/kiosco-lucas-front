@@ -20,7 +20,7 @@ function Sell() {
         if (isProcessing.current) return;
         isProcessing.current = true;
         if (prod.quantity + 1 <= prod.product.stock) {
-            socket.emit('addToCart', {cid: user.cart._id, pid: prod.product._id, quantity: 1});
+            socket.emit('addToCart', {cid: user.cart, pid: prod.product._id, quantity: 1});
         }
     
         setTimeout(() => isProcessing.current = false, 300); 
@@ -31,7 +31,7 @@ function Sell() {
         if (isProcessing.current) return;
         isProcessing.current = true;
         if (prod.quantity - 1 > 0) {
-            socket.emit('addToCart', {cid: user.cart._id, pid: prod.product._id, quantity: -1});
+            socket.emit('addToCart', {cid: user.cart, pid: prod.product._id, quantity: -1});
         }
     
         setTimeout(() => isProcessing.current = false, 300);
@@ -39,7 +39,7 @@ function Sell() {
 
     const clearCart = async(e)=>{
         e.preventDefault();
-        const response = await emptyCart(user.cart._id);
+        const response = await emptyCart(user.cart);
         toast.success(response.message, {
             duration:3000,
             pauseOnHover:false,
