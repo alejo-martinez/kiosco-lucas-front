@@ -20,22 +20,6 @@ function Search() {
     const [querySearch, setQuerySearch] = useState('');
 
 
-    // useEffect(()=>{
-    //     const focusInpt = ()=>{
-    //         if(inputRef.current){
-    //             inputRef.current.focus();
-    //         }
-    //     }
-
-    //     document.addEventListener("click", focusInpt);
-    //     document.addEventListener("keydown", focusInpt);
-
-    //     return ()=>{
-    //         document.removeEventListener("click", focusInpt);
-    //         document.removeEventListener("keydown", focusInpt);
-    //     }
-    // }, [])
-
     const handleChecked = (e) => {
         if (!e.target.checked) {
             setProducts([]);
@@ -64,7 +48,7 @@ function Search() {
 
     const handleSearchByCode = async (e) => {
         if (e.key === 'Enter') {
-            socket.emit('search', { query: e.target.value, cid: user.cart._id, quantity: 1 });
+            socket.emit('search', { query: e.target.value, cid: user.cart, quantity: 1 });
             setQuerySearch('');
             // e.target.value = '';
             // inputRef.current.value ="";
