@@ -34,7 +34,7 @@ export const CartProvider = ({children}) => {
 
     const removeProductById = async(pid)=>{
         try {
-            const response = await api.put(`/api/cart/remove/prod/${user.cart._id}`, {pid: pid});
+            const response = await api.put(`/api/cart/remove/prod/${user.cart}`, {pid: pid});
             const data = response.data;
             if(data.status === 'success'){
                 setCart(data.payload);
@@ -47,7 +47,7 @@ export const CartProvider = ({children}) => {
 
     useEffect(()=>{
         if(user){
-            fetchCart(user.cart._id);
+            fetchCart(user.cart);
         }
     },[]);
 
