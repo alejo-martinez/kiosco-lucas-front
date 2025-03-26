@@ -9,6 +9,7 @@ import Sidebar from '@/components/Sidebar';
 import AdminRoute from '@/components/AdminRoute';
 import { toast } from 'react-toastify';
 import { useSearchParams } from 'next/navigation';
+import { ChevronLeftIcon, ChevronRightIcon } from '@heroicons/react/24/solid';
 
 function Sells() {
     const router = useRouter();
