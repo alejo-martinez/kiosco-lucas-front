@@ -21,7 +21,14 @@ function Payment() {
 
     const handlePayment = (e) => {
         // e.preventDefault();
-        setPayment(e.target.value);
+        let value = e.target.value;
+    
+        // Eliminar ceros a la izquierda
+        if (value.startsWith("0")) {
+            value = value.replace(/^0+/, ""); 
+        }
+        // Actualizar el estado del input general
+        setPayment(value);
     }
 
     const cleanVuelto = () => {
@@ -33,19 +40,21 @@ function Payment() {
             e.preventDefault();
             if (payment > 0) {
                 const vueltoResult = Number(payment) - Number(amount);
-                if(vueltoResult < 0) throw new Error('Monto para abonar insuficente')
+                if(vueltoResult < 0){
+                    throw new Error('Monto para abonar insuficente')
+                }
                 if (vueltoResult > 0) setVuelto(vueltoResult)
             }
             const response = await api.post('/api/ticket/create', { amount: amount, payment_method: paymentMethod });
             const data = response.data;
+            setPayment(0)
+            setAmount(0);
+            setCart(data.payload)
             toast.success(data.message, {
                 duration: 2000,
                 closeButton: true,
                 hideProgressBar: true
             })
-            setPayment(0)
-            setAmount(0);
-            setCart(data.payload)
         } catch (error) {
             if(error.response){
                 toast.error(error.response.data.error, {

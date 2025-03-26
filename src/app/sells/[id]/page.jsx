@@ -113,7 +113,7 @@ function SellDay() {
                 <span>Usuario activo: {user.name}</span>
                 <span>{actualDate}</span>
                 <div className=''>
-                  <Link href={"/panel"} className='text-center p-1 bg-blue-200 rounded font-bold'>Volver</Link>
+                  <Link href={"/sells"} className='text-center p-1 bg-blue-200 rounded font-bold'>Volver</Link>
                 </div>
               </div>
             }

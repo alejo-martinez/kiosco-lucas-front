@@ -13,7 +13,11 @@ export default function ModalComponent() {
 
 
   const handleChange = (e)=>{
-    setInputValue(e.target.value);
+    let value = e.target.value;
+    if (value.startsWith("0")) {
+      value = value.replace(/^0+/, ""); 
+  }
+    setInputValue(value);
   }
 
   const closeModal = () =>{

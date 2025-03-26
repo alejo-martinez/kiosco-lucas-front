@@ -7,22 +7,39 @@ import { useSession } from '@/context/SessionContext';
 import { useRouter } from 'next/navigation';
 import Sidebar from '@/components/Sidebar';
 import AdminRoute from '@/components/AdminRoute';
+import { toast } from 'react-toastify';
+import { useSearchParams } from 'next/navigation';
 
 function Sells() {
     const router = useRouter();
+    const params = useSearchParams();
+    const userParam = params.get('user');
 
     const { user, logout } = useSession();
     const [tickets, setTickets] = useState([]);
     const [setings, setSetings] = useState({});
     const [actualDate, setActualDate] = useState(null);
-
+    const [users, setUsers] = useState([]); 
+    const [userFilter, setUserFilter] = useState(null);
 
     const formatDateForUser = () => {
         const date = new Date();
         const options = { weekday: "long", day: "numeric", month: "long" };
         setActualDate(date.toLocaleDateString("es-ES", options))
     };
+
+    const fetchsUsers = async()=>{
+        try {
+            const response = await api.get(`/api/user/`);
+            const data = response.data;
+            setUsers(data.payload);
+        } catch (error) {
+            console.log(error);
+        }
+    }
+
     useEffect(() => {
+        fetchsUsers();
         formatDateForUser();
     }, []);
 
@@ -39,13 +56,16 @@ function Sells() {
         return new Date(date).toLocaleDateString('es-AR', options);
     }
 
+    const handleChangeUserFilter = (e)=>{
+        if(e.target.value) router.push(`/sells/?user=${e.target.value}`)
+    }
+
 
     const fetchData = async () => {
         try {
-            const response = await api.get('/api/ticket/');
+            const response = await api.get(`/api/ticket/${userParam ? `?usuario=${userParam}` : ''}`);
             const data = response.data;
             setTickets(data.payload.docs);
-            console.log(data.payload);
             setSetings(data.payload);
         } catch (error) {
             console.log(error);
@@ -54,7 +74,7 @@ function Sells() {
 
     useEffect(() => {
         fetchData();
-    }, []);
+    }, [userParam]);
 
     return (
         <div className='grid grid-cols-[0.2fr_4fr_1.5fr] grid-rows-[auto_1fr_auto] h-screen gap-2 p-2'>
@@ -72,11 +92,21 @@ function Sells() {
 
             <div className='col-span-2'>
                 <div>
+                    <div>
+                        <select onChange={handleChangeUserFilter}>
+                            <option value="">Selecciona un usuario</option>
+                            {users?.map((option, index) => (
+                                <option key={index} value={option._id}>
+                                    {option.name}
+                                </option>
+                            ))}
+                        </select>
+                    </div>
                     <div className='flex justify-center items-center mt-8'>
                         {setings?.hasPrevPage &&
                             <div className='flex'>
                                 <button className='text-slate-800 mr-4'>
-                                    <Link href={`/panel?query=${setings.prevPage}`}>
+                                    <Link href={`/sells?query=${setings.prevPage}`}>
                                         <ChevronLeftIcon className='h-4 w-4' />
                                     </Link>
                                 </button>
@@ -90,7 +120,7 @@ function Sells() {
                         {setings?.hasNextPage &&
                             <div className='flex'>
                                 <button className='text-slate-800 ml-4'>
-                                    <Link href={`/panel?query=${setings.nextPage}`}>
+                                    <Link href={`/sells?query=${setings.nextPage}`}>
                                         <ChevronRightIcon className='h-4 w-4' />
                                     </Link>
 
@@ -114,7 +144,7 @@ function Sells() {
                             for (let index = 0; index < value.products.length; index++) {
                                 const element = value.products[index];
                                 quantity += element.quantity;
-                                
+
                             }
                             return (
                                 <tr key={index} className="border-b">

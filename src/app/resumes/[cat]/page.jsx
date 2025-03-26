@@ -46,6 +46,7 @@ function Resumes() {
         try {
             const response = await api.get(`/api/resume/summaries/${cat}?page=${paramValue ? paramValue : 1}`);
             const data = response.data;
+            console.log(data)
             setResumes(data.payload.docs);
             setSetings(data.payload);
         } catch (error) {
@@ -72,9 +73,6 @@ function Resumes() {
                     <div className='flex flex-col p-3'>
                         <span>Usuario activo: {user.name}</span>
                         <span>{actualDate}</span>
-                        {/* <div className=''>
-                            <Link href={"/panel"} className='text-center p-1 bg-blue-200 rounded font-bold'>Volver</Link>
-                        </div> */}
                     </div>
                 }
             </div>
@@ -124,7 +122,9 @@ function Resumes() {
                                     <td className="w-1/5 p-2 text-center">{formatDate(value.init_date.init)}</td>
                                     <td className="w-1/5 p-2 text-center">{value.sales > 1 ? `${value.sales} ventas` : value.sales === 0 ? `Sin ventas` : `${value.sales} venta`}</td>
                                     <td className="w-1/5 p-2 text-center">${value.amount}</td>
+                                    {value.sales > 0 && 
                                     <td className="w-1/5 p-2 text-center"><Link href={`/resumes/diary/${value._id}`}>Ver detalles</Link></td>
+                                    }
                                 </tr>
                             )
                         })}
@@ -135,4 +135,4 @@ function Resumes() {
     )
 }
 
-export default AdminRoute(Resumes);
+export default Resumes;

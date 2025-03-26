@@ -67,14 +67,14 @@ function Sidebar() {
                                 Crear
                             </Link>
                         </div>
+                    </div>
+                }
                         <div className='flex items-center'>
                             <Link href={"/resumes/diary"} className='text-center'>
                                 <ClipboardIcon width={50} />
                                 Resúmenes
                             </Link>
                         </div>
-                    </div>
-                }
             </div>
             <div className='flex flex-wrap'>
                 <button onClick={closeSession} className='rounded w-fit p-1 bg-red-700 text-white hover:cursor-pointer'>Cerrar sesión</button>

@@ -10,7 +10,7 @@ import AdminRoute from '@/components/AdminRoute';
 
 function AddProduct() {
 
-    const {user} = useSession();
+    const { user } = useSession();
 
     const [producto, setProducto] = useState({ title: '', costPrice: 0, sellingPrice: 0, stock: 0, totalStock: 0, percentage: 0 });
     const [code, setCode] = useState('');
@@ -27,18 +27,30 @@ function AddProduct() {
     }, []);
     // const setStockPrice
     const handleChange = (e) => {
-        e.preventDefault();
-        if (e.target.name === 'sellingPrice' && producto.costPrice !== '') {
-            const newPercentage = ((Number(e.target.value) - Number(producto.costPrice)) / Number(producto.costPrice)) * 100;
-
-            setProducto({ ...producto, [e.target.name]: e.target.value, percentage: newPercentage });
-        } else if (e.target.name === 'percentage') {
-            const newSellingPrice = Number(producto.costPrice) * (1 + (Number(e.target.value) / 100))
-            setProducto({ ...producto, [e.target.name]: e.target.value, sellingPrice: newSellingPrice });
-        } else {
-            setProducto({ ...producto, [e.target.name]: e.target.value });
+        let value = e.target.value;
+    
+        // Eliminar ceros iniciales si los hay
+        if (value.startsWith("0")) {
+            value = value.replace(/^0+/, ""); 
         }
-    }
+    
+        // Crear un nuevo objeto con el producto actualizado
+        let updatedProduct = { ...producto, [e.target.name]: value };
+    
+        // Si se está modificando el precio de venta
+        if (e.target.name === 'sellingPrice' && producto.costPrice) {
+            const newPercentage = ((Number(value) - Number(producto.costPrice)) / Number(producto.costPrice)) * 100;
+            updatedProduct.percentage = newPercentage.toFixed(2); // Redondear porcentaje a 2 decimales
+        } 
+        // Si se está modificando el porcentaje
+        else if (e.target.name === 'percentage') {
+            const newSellingPrice = Number(producto.costPrice) * (1 + (Number(value) / 100));
+            updatedProduct.sellingPrice = newSellingPrice.toFixed(2); // Redondear precio de venta a 2 decimales
+        }
+    
+        // Actualizar el estado con el nuevo objeto
+        setProducto(updatedProduct);
+    };
 
     const handleChangeCode = (e) => {
         setCode(e.target.value);
@@ -133,15 +145,6 @@ function AddProduct() {
                             <label className="text-gray-600">Código</label>
                             <input type="number" name="code" value={code} className="border rounded p-2" onChange={handleChangeCode} onKeyDown={handleEnterProduct} />
                         </div>
-                        {/* {error && <div className="text-red-600 text-sm">{error}</div>} */}
-                        {/* <div className="text-center">
-                        <button
-                        onClick={createProduct}
-                        className="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-700 transition"
-                        >
-                        Crear producto
-                        </button>
-                        </div> */}
                     </form>
                 </div>
             </div>

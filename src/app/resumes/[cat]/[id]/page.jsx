@@ -119,6 +119,11 @@ function ResumeId() {
                   <span className="text-gray-600 text-sm">Cerró:</span>
                   <span className="font-semibold text-gray-800 ml-2">{resume.finish_date.seller.name}</span>
                 </div>
+                <div>
+
+                  <span className="text-gray-600 text-sm">Caja inicial:</span>
+                  <span className="font-semibold text-gray-800 ml-2">${resume.initAmount}</span>
+                </div>
               </div>
 
               {/* Lista de productos */}
@@ -126,9 +131,16 @@ function ResumeId() {
               <div className="flex flex-col gap-4 mt-2">
                 {resume.products.map((value, index) => (
                   <div key={index} className="flex justify-between items-center bg-gray-100 p-3 rounded-lg shadow-sm">
-                    <div>
+                    <div className='flex flex-col'>
                       <h5 className="font-semibold text-gray-900">{value.product.title}</h5>
                       <span className="text-sm text-gray-600">Cantidad: {value.quantity}</span>
+                      {(user && user.role === 'admin') &&
+                      <div className='flex flex-col
+                      '>
+                      <span className="text-sm text-gray-600">Ganancia: ${value.ganancia.toFixed(2)}</span>
+                      <span className="text-sm text-gray-600">Porcentaje de ganancia: {value.porcentajeGanancia.toFixed(2)}%</span>
+                      </div> 
+                      }
                     </div>
                     <span className="text-gray-900 font-semibold">${value.total}</span>
                   </div>
@@ -161,4 +173,4 @@ function ResumeId() {
   )
 }
 
-export default AdminRoute(ResumeId);
+export default ResumeId;
