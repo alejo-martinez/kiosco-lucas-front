@@ -22,10 +22,10 @@ function Payment() {
     const handlePayment = (e) => {
         // e.preventDefault();
         let value = e.target.value;
-    
+
         // Eliminar ceros a la izquierda
         if (value.startsWith("0")) {
-            value = value.replace(/^0+/, ""); 
+            value = value.replace(/^0+/, "");
         }
         // Actualizar el estado del input general
         setPayment(value);
@@ -35,12 +35,55 @@ function Payment() {
         setVuelto(0);
     }
 
+    const enterSell = async (e) => {
+        try {
+            console.log(e.code)
+            if (e.code === 'NumpadEnter') {
+
+                if (payment === 0) {
+                    throw new Error('Monto insuficiente');
+                }
+                if (payment > 0) {
+                    const vueltoResult = Number(payment) - Number(amount);
+                    if (vueltoResult < 0) {
+                        throw new Error('Monto para abonar insuficente')
+                    }
+                    if (vueltoResult > 0) setVuelto(vueltoResult)
+                }
+                const response = await api.post('/api/ticket/create', { amount: amount, payment_method: paymentMethod });
+                const data = response.data;
+                setPayment(0)
+                setAmount(0);
+                setCart(data.payload)
+                toast.success(data.message, {
+                    duration: 2000,
+                    closeButton: true,
+                    hideProgressBar: true
+                })
+            }
+        } catch (error) {
+            if (error.response) {
+                toast.error(error.response.data.error, {
+                    duration: 3000
+                })
+            }
+            else {
+                toast.error(error.message, {
+                    duration: 3000
+                })
+            }
+        }
+    }
+
     const completeSell = async (e) => {
         try {
             e.preventDefault();
+            if (payment === 0) {
+                throw new Error('Monto insuficiente');
+            }
             if (payment > 0) {
                 const vueltoResult = Number(payment) - Number(amount);
-                if(vueltoResult < 0){
+                if (vueltoResult < 0) {
                     throw new Error('Monto para abonar insuficente')
                 }
                 if (vueltoResult > 0) setVuelto(vueltoResult)
@@ -56,12 +99,12 @@ function Payment() {
                 hideProgressBar: true
             })
         } catch (error) {
-            if(error.response){
+            if (error.response) {
                 toast.error(error.response.data.error, {
                     duration: 3000
                 })
             }
-            else{
+            else {
                 toast.error(error.message, {
                     duration: 3000
                 })
@@ -89,7 +132,7 @@ function Payment() {
                     <span className='text-2xl'>Abona:</span>
                     <div className='flex items-center justify-end'>
                         <span className='font-bold text-xl mr-1'>$</span>
-                        <input type="number" name='pay' value={payment} className='border rounded w-2/5 p-1' onChange={handlePayment} />
+                        <input type="number" name='pay' value={payment} className='border rounded w-2/5 p-1' onChange={handlePayment} onKeyDown={enterSell}/>
                     </div>
                 </div>
                 {vuelto > 0 &&

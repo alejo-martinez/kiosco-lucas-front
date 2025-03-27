@@ -3,11 +3,12 @@
 import React, { createContext, useContext, useEffect, useState } from "react";
 import api from "@/app/utils/axios.config";
 import { useRouter } from "next/navigation";
+import { useCart } from "./CartContext";
 
 const SessionContext = createContext(undefined);
 export const SessionProvider = ({ children }) => {
     const url = process.env.NEXT_PUBLIC_URL_BACK;
-
+    
     const router = useRouter();
     const [user, setUser] = useState(null);
     const [loading, setLoading] = useState(true);

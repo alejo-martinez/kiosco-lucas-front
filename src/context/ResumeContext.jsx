@@ -57,6 +57,7 @@ export const ResumeProvider = ({children}) =>{
             });
             setResumeId('');
             localStorage.removeItem('resumeId');
+            return data.resumeId;
         } catch (error) {
             toast.error(error.message,{
                 duration:2000,

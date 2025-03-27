@@ -20,9 +20,9 @@ function Sidebar() {
                 duration: 1400,
                 hideProgressBar: true
             })
-            setTimeout(() => {
-                router.push('/login')
-            }, 1500)
+            router.push('/login')
+            // setTimeout(() => {
+            // }, 1500)
         } catch (error) {
             toast.error(error, {
                 duration: 3000,

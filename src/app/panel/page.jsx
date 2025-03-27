@@ -7,7 +7,7 @@ import { useSession } from '@/context/SessionContext';
 import { toast } from 'react-toastify';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
-import { ChevronLeftIcon, ChevronRightIcon } from "@heroicons/react/24/solid";
+import { ChevronLeftIcon, ChevronRightIcon, ExclamationTriangleIcon } from "@heroicons/react/24/solid";
 import socket from '../utils/socket.config';
 import Sidebar from '@/components/Sidebar';
 import AdminRoute from '@/components/AdminRoute';
@@ -19,6 +19,8 @@ function Panel() {
     const { user, logout } = useSession();
     const searchParams = useSearchParams();
     const paramValue = searchParams.get("query");
+    const filterParam = searchParams.get("filter");
+    const valueFilterParam = searchParams.get("valueFilter");
 
     const [actualDate, setActualDate] = useState(null);
     const [products, setProducts] = useState([]);
@@ -28,7 +30,15 @@ function Panel() {
 
     const fetchData = async () => {
         try {
-            const response = await api.get(`/api/products/filter/?query=${paramValue ? paramValue : 1}`);
+            const queryParams = new URLSearchParams();
+
+            if (paramValue) queryParams.append("query", paramValue);
+            if (filterParam && valueFilterParam) {
+                queryParams.append("filter", filterParam);
+                queryParams.append("valueFilter", valueFilterParam);
+            }
+
+            const response = await api.get(`/api/products/filter/?${queryParams.toString()}`);
             const data = response.data;
             setProducts(data.payload.docs);
             setSetings({ hasNextPage: data.payload.hasNextPage, hasPrevPage: data.payload.hasPrevPage, nextPage: data.payload.nextPage, page: data.payload.page, prevPage: data.payload.prevPage, totalPages: data.payload.totalPages })
@@ -39,17 +49,17 @@ function Panel() {
         }
     }
 
-    const downloadProducts = async(e)=>{
+    const downloadProducts = async (e) => {
         e.preventDefault();
         const response = await api.get(`/api/products/`);
         const data = response.data;
-        if(data.status === 'success'){
-            toast.success('Comenzando la descarga',{
-                duration:2000,
-                pauseOnFocusLoss:false,
-                pauseOnHover:false,
-                hideProgressBar:true,
-                closeButton:false
+        if (data.status === 'success') {
+            toast.success('Comenzando la descarga', {
+                duration: 2000,
+                pauseOnFocusLoss: false,
+                pauseOnHover: false,
+                hideProgressBar: true,
+                closeButton: false
             })
             generatePDF(data.payload);
         }
@@ -96,7 +106,18 @@ function Panel() {
 
     }
 
+    const handleChangeFilter = (e) => {
+        const selectedOption = e.target.selectedOptions[0]; // Obtiene la opción seleccionada
+        const filter = selectedOption.dataset.filter;
+        const params = new URLSearchParams();
+        params.set('query', paramValue ? paramValue : 1);
+        if(filter) params.set('filter', filter);
+        if(e.target.value) params.set('valueFilter', e.target.value);
+        
 
+        router.push(`/panel?${params.toString()}`);
+
+    }
 
     const formatDateForUser = () => {
         const date = new Date();
@@ -122,18 +143,19 @@ function Panel() {
             }
         })
 
-        socket.on('errorCodeUpdate', data=>{
-            toast.error(data.error,{
-                duration:2000,
-                hideProgressBar:true,
-                pauseOnHover:false
+        socket.on('errorCodeUpdate', data => {
+            toast.error(data.error, {
+                duration: 2000,
+                hideProgressBar: true,
+                pauseOnHover: false
             })
         })
     })
 
     useEffect(() => {
         fetchData();
-    }, [paramValue]);
+        console.log(setings)
+    }, [paramValue, filterParam, valueFilterParam]);
 
     return (
         <div>
@@ -160,6 +182,16 @@ function Panel() {
                         }
                     </div>
                     <div className='col-span-2'>
+                        <div>
+                            <select onChange={handleChangeFilter}>
+                                <option value="">Selecciona un filtro</option>
+                                <option value="2" data-filter="stock">Menor stock</option>
+                                {/* <option value="">A-Z</option>
+                                <option value="">Z-A</option> */}
+                                {/* <option value="">Z-A</option> */}
+
+                            </select>
+                        </div>
                         <div>
                             <div className='flex justify-center items-center mt-12 mb-10'>
                                 {setings?.hasPrevPage &&
@@ -213,7 +245,13 @@ function Panel() {
                                             <td className="w-1/5 p-2 text-center">{value.title}</td>
                                             <td className="w-1/5 p-2 text-center">$ {value.costPrice}</td>
                                             <td className="w-1/5 p-2 text-center">$ {value.sellingPrice}</td>
-                                            <td className="w-1/5 p-2 text-center">{value.stock}</td>
+                                            <td className="w-1/5 p-2 text-center">
+                                            <div className='flex justify-center gap-2'>
+                                                {value.stock <= 2 &&
+                                                <ExclamationTriangleIcon className={`h-6 w-6 ${value.stock === 0 ? 'text-red-500' : 'text-yellow-500'}`} />
+                                                }
+                                                <span>{value.stock}</span>
+                                            </div></td>
                                             <td className="w-1/5 p-2 text-center">{value.totalStock}</td>
                                             <td className="w-1/5 p-2 text-center">{value.percentage.toFixed(2)}%</td>
                                         </tr>

@@ -2,15 +2,18 @@
 
 import React, { useEffect, useState } from 'react';
 import { useSession } from '@/context/SessionContext';
+import { useRouter } from 'next/navigation';
 
 import { useResume } from '@/context/ResumeContext';
+import { useProduct } from '@/context/ProductContext';
 
 import Search from './Search';
 
 function NavBar() {
-
+  const router = useRouter();
   const { resumeId, initDay, endDay } = useResume();
-
+  
+  const {lowStockProducts} = useProduct();
   const { user } = useSession();
 
   const [actualDate, setActualDate] = useState(null);
@@ -22,7 +25,8 @@ function NavBar() {
 
   const end = async(e)=>{
     e.preventDefault();
-    await endDay();
+    const response = await endDay();
+    router.push(`/resumes/diary/${response}`);
   }
 
 
@@ -31,12 +35,28 @@ function NavBar() {
     const options = { weekday: "long", day: "numeric", month: "long" };
     setActualDate(date.toLocaleDateString("es-ES", options))
   };
+
+  const navigateToLowProducts = (e)=>{
+    e.preventDefault();
+    const params = new URLSearchParams();
+    params.set('query', 1);
+    params.set('filter', 'stock');
+    params.set('valueFilter', 2);
+
+    router.push(`/panel?${params.toString()}`)
+  }
+
   useEffect(() => {
     formatDateForUser();
   }, []);
 
   return (
     <div className='flex'>
+      {(lowStockProducts.length > 0 && user?.role === 'admin') &&
+      <div className='flex h-fit flex-wrap items-center self-center'>
+        <button className='cursor-pointer px-6 py-3 font-bold text-white rounded-lg bg-red-600 shadow-lg animate-[glow_1.5s_infinite_alternate]' onClick={navigateToLowProducts}>Productos de bajo Stock</button>
+      </div>
+      }
       <div className='flex flex-grow justify-center'>
         <Search />
       </div>

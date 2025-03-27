@@ -19,7 +19,7 @@ function Login() {
   const handleSubmit = async(e)=>{
     e.preventDefault();
     const response = await login(userLogin);
-    console.log(response)
+
     if(response.status === 'success'){
       toast.success('Sesion iniciada!',{
         autoClose:1400,
@@ -27,9 +27,9 @@ function Login() {
         closeButton:false,
         hideProgressBar:true
       })
-      setTimeout(()=>{
-        router.push('/');
-      }, 1500);
+      router.push('/');
+      // setTimeout(()=>{
+      // }, 1500);
     } else{
       toast.error(response.error,{
         autoClose:3000,
