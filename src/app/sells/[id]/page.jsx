@@ -41,28 +41,6 @@ function SellDay() {
     }
   }
 
-  const closeSession = async (e) => {
-    try {
-      e.preventDefault();
-      const response = await logout();
-      toast.success(response.message, {
-        closeButton: false,
-        duration: 1400,
-        hideProgressBar: true
-      })
-      setTimeout(() => {
-        router.push('/login')
-      }, 1500)
-    } catch (error) {
-      toast.error(error, {
-        duration: 3000,
-        hideProgressBar: true,
-        closeButton: true,
-        pauseOnHover: true
-      })
-    }
-  }
-
   const formatDate = (date) => {
     const options = {
       day: '2-digit',
@@ -113,7 +91,12 @@ function SellDay() {
                 <span>Usuario activo: {user.name}</span>
                 <span>{actualDate}</span>
                 <div className=''>
-                  <Link href={"/sells"} className='text-center p-1 bg-blue-200 rounded font-bold'>Volver</Link>
+                  <button
+                    onClick={() => router.back()}
+                    className="cursor-pointer text-center p-1 bg-blue-200 rounded font-bold justify-self-center"
+                  >
+                    Volver
+                  </button>
                 </div>
               </div>
             }

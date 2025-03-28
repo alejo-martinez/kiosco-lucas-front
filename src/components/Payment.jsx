@@ -4,8 +4,10 @@ import React, { useEffect, useState } from 'react';
 import { useCart } from '@/context/CartContext';
 import api from '@/app/utils/axios.config';
 import { toast } from 'react-toastify';
+import { useResume } from '@/context/ResumeContext';
 function Payment() {
 
+    const {resumeId} = useResume();
     const [amount, setAmount] = useState(0);
     const [paymentMethod, setPaymentMethod] = useState('eft');
     const [payment, setPayment] = useState(0);
@@ -37,7 +39,6 @@ function Payment() {
 
     const enterSell = async (e) => {
         try {
-            console.log(e.code)
             if (e.code === 'NumpadEnter') {
 
                 if (payment === 0) {
@@ -50,7 +51,7 @@ function Payment() {
                     }
                     if (vueltoResult > 0) setVuelto(vueltoResult)
                 }
-                const response = await api.post('/api/ticket/create', { amount: amount, payment_method: paymentMethod });
+                const response = await api.post('/api/ticket/create', { amount: amount, payment_method: paymentMethod, rid: resumeId });
                 const data = response.data;
                 setPayment(0)
                 setAmount(0);
@@ -88,7 +89,7 @@ function Payment() {
                 }
                 if (vueltoResult > 0) setVuelto(vueltoResult)
             }
-            const response = await api.post('/api/ticket/create', { amount: amount, payment_method: paymentMethod });
+            const response = await api.post('/api/ticket/create', { amount: amount, payment_method: paymentMethod, rid: resumeId});
             const data = response.data;
             setPayment(0)
             setAmount(0);

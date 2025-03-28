@@ -9,6 +9,7 @@ import Link from 'next/link';
 import { useSession } from '@/context/SessionContext';
 import AdminRoute from '@/components/AdminRoute';
 
+
 function ResumeId() {
 
   const params = useParams();
@@ -16,6 +17,8 @@ function ResumeId() {
   const [resume, setResume] = useState(null);
   const [loading, setLoading] = useState(true);
   const [actualDate, setActualDate] = useState(null);
+  const [showTickets, setShowTickets] = useState(false);
+  console.log(resume)
 
   const formatDateForUser = () => {
     const date = new Date();
@@ -60,7 +63,6 @@ function ResumeId() {
     try {
       const response = await api.get(`/api/resume/summary/${params.id}`);
       const data = response.data;
-      console.log(data.payload)
       setResume(data.payload);
       setLoading(false);
     } catch (error) {
@@ -71,6 +73,11 @@ function ResumeId() {
         pauseOnHover: false
       })
     }
+  }
+
+  const handleShowTickets = (e) => {
+    e.preventDefault();
+    setShowTickets(!showTickets);
   }
 
   useEffect(() => {
@@ -135,16 +142,40 @@ function ResumeId() {
                       <h5 className="font-semibold text-gray-900">{value.product.title}</h5>
                       <span className="text-sm text-gray-600">Cantidad: {value.quantity}</span>
                       {(user && user.role === 'admin') &&
-                      <div className='flex flex-col
+                        <div className='flex flex-col
                       '>
-                      <span className="text-sm text-gray-600">Ganancia: ${value.ganancia.toFixed(2)}</span>
-                      <span className="text-sm text-gray-600">Porcentaje de ganancia: {value.porcentajeGanancia.toFixed(2)}%</span>
-                      </div> 
+                          <span className="text-sm text-gray-600">Ganancia: ${value.ganancia.toFixed(2)}</span>
+                          <span className="text-sm text-gray-600">Porcentaje de ganancia: {value.porcentajeGanancia.toFixed(2)}%</span>
+                        </div>
                       }
                     </div>
                     <span className="text-gray-900 font-semibold">${value.total}</span>
                   </div>
                 ))}
+              </div>
+              <div className='flex flex-col gap-4 mt-2 justify-self-center'>
+                {!showTickets ?
+                  <button onClick={handleShowTickets} className='p-1 cursor-pointer bg-blue-400 rounded text-white w-fit'>Mostrar ventas</button>
+                  :
+                  <div>
+                    <button onClick={handleShowTickets} className='p-1 cursor-pointer bg-blue-400 rounded text-white w-fit'>Cerrar ventas</button>
+                    <h4 className="mt-4 text-lg font-semibold text-gray-700 border-b pb-1">Ventas:</h4>
+                    <div className="flex flex-col gap-4 mt-2">
+                      {resume.tickets?.map((value, index) => (
+                        <div key={index} className="flex justify-between items-center bg-gray-100 p-3 rounded-lg shadow-sm">
+                          <div className='flex flex-col'>
+                            <span className="font-medium">Venta realizada por:  {value.ticket.seller.name}</span>
+                            <span className="text-sm text-gray-600">Realizada el: {formatDate(value.ticket.created_at)}</span>
+                            <span className="text-sm text-gray-600">Productos vendidos: {value.ticket.products.length}</span>
+                            <span className="text-sm text-gray-600">Medio de pago: {formatPaymentMethod(value.ticket.payment_method)}</span>
+                            <span className="text-sm text-gray-600">Total: ${value.ticket.amount}</span>
+                            <span className='text-center text-blue-600 font-bold'><Link href={`/sells/${value.ticket._id}`}>Ver venta</Link></span>
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                }
               </div>
               <h4 className="mt-4 text-lg font-semibold text-gray-700 border-b pb-1">Métodos de pago:</h4>
               <div className="flex flex-col gap-4 mt-2">

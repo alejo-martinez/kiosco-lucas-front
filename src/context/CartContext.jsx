@@ -49,7 +49,7 @@ export const CartProvider = ({children}) => {
         if(user){
             fetchCart(user.cart);
         }
-    },[]);
+    },[user]);
 
     useEffect(()=>{
         socket.on('updatedCart', data =>{

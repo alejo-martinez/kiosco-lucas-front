@@ -122,7 +122,7 @@ function Resumes() {
                                     <td className="w-1/5 p-2 text-center">{formatDate(value.init_date.init)}</td>
                                     <td className="w-1/5 p-2 text-center">{value.sales > 1 ? `${value.sales} ventas` : value.sales === 0 ? `Sin ventas` : `${value.sales} venta`}</td>
                                     <td className="w-1/5 p-2 text-center">${value.amount}</td>
-                                    {value.sales > 0 ? 
+                                    {value.finish_date ? 
                                     <td className="w-1/5 p-2 text-center"><Link href={`/resumes/diary/${value._id}`}>Ver detalles</Link></td>
                                     :
                                     <td className="w-1/5 p-2 text-center"><span>Jornada en curso</span></td>

@@ -11,9 +11,30 @@ export const ResumeProvider = ({children}) =>{
     const [showModal, setShowModal] = useState(false);
     const [resumeId, setResumeId] = useState(null);
 
+    const fetchActiveResume = async()=>{
+        try {
+            const response = await api.get('/api/resume/active/summary');
+            const data = response.data;
+            if(data.status === 'success'){
+                const payload = data.payload;
+                if(payload){
+                    setResumeId(payload._id);
+                    localStorage.setItem('resumeId', payload.id);
+                } else{
+                    setShowModal(true);
+                }
+            }
+
+        } catch (error) {
+            console.log(error);
+        }
+    }
+
     useEffect(()=>{
         const resumeExist = localStorage.getItem('resumeId');
-        if(!resumeExist) setShowModal(true);
+        if(!resumeExist){
+            fetchActiveResume();
+        }
         else setResumeId(resumeExist);
       },[]);
     

@@ -15,6 +15,7 @@ function Sells() {
     const router = useRouter();
     const params = useSearchParams();
     const userParam = params.get('user');
+    const queryParam = params.get('query')
 
     const { user, logout } = useSession();
     const [tickets, setTickets] = useState([]);
@@ -59,12 +60,13 @@ function Sells() {
 
     const handleChangeUserFilter = (e)=>{
         if(e.target.value) router.push(`/sells/?user=${e.target.value}`)
+        else router.push('/sells')
     }
 
-
+    // console.log(setings)
     const fetchData = async () => {
         try {
-            const response = await api.get(`/api/ticket/${userParam ? `?usuario=${userParam}` : ''}`);
+            const response = await api.get(`/api/ticket/${userParam ? `?usuario=${userParam}&page=${queryParam | 1}` : `?page=${queryParam | 1}`}`);
             const data = response.data;
             setTickets(data.payload.docs);
             setSetings(data.payload);
@@ -75,7 +77,7 @@ function Sells() {
 
     useEffect(() => {
         fetchData();
-    }, [userParam]);
+    }, [userParam, queryParam]);
 
     return (
         <div className='grid grid-cols-[0.2fr_4fr_1.5fr] grid-rows-[auto_1fr_auto] h-screen gap-2 p-2'>
@@ -103,11 +105,11 @@ function Sells() {
                             ))}
                         </select>
                     </div>
-                    <div className='flex justify-center items-center mt-8'>
+                    {/* <div className='flex justify-center items-center mt-8'>
                         {setings?.hasPrevPage &&
                             <div className='flex'>
                                 <button className='text-slate-800 mr-4'>
-                                    <Link href={`/sells?query=${setings.prevPage}`}>
+                                    <Link href={`/sells?page=${setings.prevPage}`}>
                                         <ChevronLeftIcon className='h-4 w-4' />
                                     </Link>
                                 </button>
@@ -115,20 +117,20 @@ function Sells() {
                         }
                         <div>
                             <p className='text-slate-800 font-bold'>
-                                {setings?.page}
+                                {queryParam | 1}
                             </p>
                         </div>
                         {setings?.hasNextPage &&
                             <div className='flex'>
                                 <button className='text-slate-800 ml-4'>
-                                    <Link href={`/sells?query=${setings.nextPage}`}>
+                                    <Link href={`/sells?${user && user._id}&page=${setings.nextPage}`}>
                                         <ChevronRightIcon className='h-4 w-4' />
                                     </Link>
 
                                 </button>
                             </div>
                         }
-                    </div>
+                    </div> */}
                 </div>
                 <table className="w-full table-fixed border-collapse">
                     <thead>
