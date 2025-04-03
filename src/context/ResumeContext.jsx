@@ -90,6 +90,8 @@ export const ResumeProvider = ({children}) =>{
 
     }
 
+
+
     return(
         <ResumeContext.Provider value={{showModal, setShowModal, createResume, resumeId, initDay, endDay}}>
             {children}

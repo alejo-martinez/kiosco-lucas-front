@@ -6,21 +6,24 @@ import { useRouter } from "next/navigation";
 
 const AdminRoute = (WrappedComponent) => {
 
-    // const {user} = useSession();
+  // const {user} = useSession();
 
   return (props) => {
+    const rodrigoId = process.env.NEXT_PUBLIC_RODRIGO_ID;
     const router = useRouter();
     const [loading, setLoading] = useState(true);
     const [isAdmin, setIsAdmin] = useState(false);
 
     useEffect(() => {
-        const user = JSON.parse(localStorage.getItem('user'));
-      if (!user || user.role !== "admin") {
+      const user = JSON.parse(localStorage.getItem('user'));
+      
+      if (!user || (String(user._id) !== String(rodrigoId) && user.role !== "admin")) {
+
         router.replace("/"); // Redirige al home si no es admin
       } else {
         setIsAdmin(true);
       }
-      
+
       setLoading(false);
     }, []);
 

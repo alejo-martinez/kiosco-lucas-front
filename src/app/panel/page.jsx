@@ -12,6 +12,10 @@ import socket from '../utils/socket.config';
 import Sidebar from '@/components/Sidebar';
 import AdminRoute from '@/components/AdminRoute';
 import { generatePDF } from '../utils/generatePdf';
+import Results from '@/components/Results';
+import AddStock from '@/components/AddStock';
+import NavBar from '@/components/NavBar';
+// import { useProduct } from '@/context/ProductContext';
 
 function Panel() {
 
@@ -22,11 +26,12 @@ function Panel() {
     const filterParam = searchParams.get("filter");
     const valueFilterParam = searchParams.get("valueFilter");
 
+
     const [actualDate, setActualDate] = useState(null);
     const [products, setProducts] = useState([]);
     const [loading, setLoading] = useState(true);
     const [setings, setSetings] = useState({});
-    const [code, setCode] = useState('');
+
 
     const fetchData = async () => {
         try {
@@ -42,32 +47,13 @@ function Panel() {
             const data = response.data;
             setProducts(data.payload.docs);
             setSetings({ hasNextPage: data.payload.hasNextPage, hasPrevPage: data.payload.hasPrevPage, nextPage: data.payload.nextPage, page: data.payload.page, prevPage: data.payload.prevPage, totalPages: data.payload.totalPages })
-            console.log(data);
             setLoading(false);
         } catch (error) {
             console.log(error);
         }
     }
 
-    const downloadProducts = async (e) => {
-        e.preventDefault();
-        const response = await api.get(`/api/products/`);
-        const data = response.data;
-        if (data.status === 'success') {
-            toast.success('Comenzando la descarga', {
-                duration: 2000,
-                pauseOnFocusLoss: false,
-                pauseOnHover: false,
-                hideProgressBar: true,
-                closeButton: false
-            })
-            generatePDF(data.payload);
-        }
-    }
 
-    const handleChange = (e) => {
-        setCode(e.target.value);
-    }
 
     const updateProd = (e, id) => {
         e.preventDefault();
@@ -98,22 +84,15 @@ function Panel() {
         }
     }
 
-    const handleSearchProductByCode = (e) => {
-        // e.preventDefault();
-        if (e.key === 'Enter') {
-            socket.emit('searchCodeUpdate', { code: e.target.value });
-        }
-
-    }
 
     const handleChangeFilter = (e) => {
         const selectedOption = e.target.selectedOptions[0]; // Obtiene la opción seleccionada
         const filter = selectedOption.dataset.filter;
         const params = new URLSearchParams();
         params.set('query', paramValue ? paramValue : 1);
-        if(filter) params.set('filter', filter);
-        if(e.target.value) params.set('valueFilter', e.target.value);
-        
+        if (filter) params.set('filter', filter);
+        if (e.target.value) params.set('valueFilter', e.target.value);
+
 
         router.push(`/panel?${params.toString()}`);
 
@@ -125,13 +104,13 @@ function Panel() {
         setActualDate(date.toLocaleDateString("es-ES", options))
     };
 
+
     useEffect(() => {
         formatDateForUser();
     }, []);
 
     useEffect(() => {
         socket.on('resultCodeUpdate', data => {
-            console.log(data)
             if (!data.producto) {
                 toast.error('No hay resultados disponibles', {
                     duration: 3000,
@@ -153,8 +132,26 @@ function Panel() {
     })
 
     useEffect(() => {
+
+        socket.on('resultTitle', data => {
+
+            if (data.results.length === 0) {
+                toast.error('No hay resultados disponibles', {
+                    duration: 3000,
+                    pauseOnHover: false,
+                    hideProgressBar: true
+                })
+            } else {
+                setProducts(data.results);
+                // console.log(data);
+            }
+        })
+
+        // socket.on()
+    }, []);
+
+    useEffect(() => {
         fetchData();
-        console.log(setings)
     }, [paramValue, filterParam, valueFilterParam]);
 
     return (
@@ -165,31 +162,14 @@ function Panel() {
                     <div className='row-span-2 bg-gray-200 p-4'>
                         <Sidebar />
                     </div>
-                    <div className='flex col-span-2 bg-gray-200 p-4'>
-                        <div className='flex flex-grow justify-center'>
-
-                            <div className='flex justify-center gap-4 mt-4 items-center'>
-                                <label>Buscar producto</label>
-                                <input type="text" name='code' value={code} onChange={handleChange} className='border p-1 rounded' onKeyDown={handleSearchProductByCode} />
-                            </div>
-                        </div>
-                        {user &&
-                            <div className='flex flex-col justify-self-end p-3'>
-                                <span>Usuario activo: {user.name}</span>
-                                <span>{actualDate}</span>
-                                <button onClick={downloadProducts} className='p-1 bg-blue-700 text-white rounded cursor-pointer'>Generar pdf</button>
-                            </div>
-                        }
+                    <div className="col-span-2 bg-gray-200 p-4">
+                        <NavBar />
                     </div>
                     <div className='col-span-2'>
                         <div>
                             <select onChange={handleChangeFilter}>
                                 <option value="">Selecciona un filtro</option>
                                 <option value="2" data-filter="stock">Menor stock</option>
-                                {/* <option value="">A-Z</option>
-                                <option value="">Z-A</option> */}
-                                {/* <option value="">Z-A</option> */}
-
                             </select>
                         </div>
                         <div>
@@ -220,16 +200,23 @@ function Panel() {
                                 }
                             </div>
                         </div>
+                        <div className='flex justify-center mb-14'>
+                            <Results />
+                        </div>
                         <table className="w-full table-fixed border-collapse">
                             <thead>
                                 <tr className="bg-gray-200 border-b">
                                     <th className="w-1/5 p-2 text-center">Código</th>
                                     <th className="w-1/5 p-2 text-center">Producto</th>
-                                    <th className="w-1/5 p-2 text-center">Precio de costo</th>
+                                    {user.role === 'admin' &&
+                                        <th className="w-1/5 p-2 text-center">Precio de costo</th>
+                                    }
                                     <th className="w-1/5 p-2 text-center">Precio de venta</th>
                                     <th className="w-1/5 p-2 text-center">Stock en tienda</th>
                                     <th className="w-1/5 p-2 text-center">Stock total</th>
+                                    {user.role === 'admin' && 
                                     <th className="w-1/5 p-2 text-center">Porcentaje de ganancia</th>
+                                    }
                                 </tr>
                             </thead>
                             <tbody>
@@ -237,23 +224,29 @@ function Panel() {
                                     return (
                                         <tr key={index} className="border-b">
                                             <td className="w-1/5 p-2 text-center flex items-center gap-2">
+                                            {user.role === 'admin' && 
                                                 <div className='flex flex-col gap-2'>
                                                     <button title='Editar' className='p-1 bg-blue-600 text-white font-bold rounded cursor-pointer' onClick={(e) => updateProd(e, value._id)}>I</button>
                                                     <button title='Eliminar' className='p-1 bg-red-600 text-white font-bold rounded cursor-pointer' onClick={(e) => deleteProduct(e, value._id, index)}>X</button>
                                                 </div>
+                                                }
                                                 {value.code}</td>
                                             <td className="w-1/5 p-2 text-center">{value.title}</td>
+                                            {user.role === 'admin' && 
                                             <td className="w-1/5 p-2 text-center">$ {value.costPrice}</td>
+                                            }
                                             <td className="w-1/5 p-2 text-center">$ {value.sellingPrice}</td>
                                             <td className="w-1/5 p-2 text-center">
-                                            <div className='flex justify-center gap-2'>
-                                                {value.stock <= 2 &&
-                                                <ExclamationTriangleIcon className={`h-6 w-6 ${value.stock === 0 ? 'text-red-500' : 'text-yellow-500'}`} />
-                                                }
-                                                <span>{value.stock}</span>
-                                            </div></td>
+                                                <div className='flex justify-center gap-2'>
+                                                    {value.stock <= 2 &&
+                                                        <ExclamationTriangleIcon className={`h-6 w-6 ${value.stock === 0 ? 'text-red-500' : 'text-yellow-500'}`} />
+                                                    }
+                                                    <span>{value.stock}</span>
+                                                </div></td>
                                             <td className="w-1/5 p-2 text-center">{value.totalStock}</td>
+                                            {user.role === 'admin' &&
                                             <td className="w-1/5 p-2 text-center">{value.percentage.toFixed(2)}%</td>
+                                            }
                                         </tr>
                                     )
                                 })}
@@ -262,6 +255,7 @@ function Panel() {
                     </div>
                 </div>
             }
+            <AddStock />
         </div>
     )
 }

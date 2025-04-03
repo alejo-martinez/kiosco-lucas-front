@@ -8,7 +8,7 @@ import Sell from "@/components/Sell";
 import Search from "@/components/Search";
 import Sidebar from "@/components/Sidebar";
 import InitModal from "@/components/InitModal";
-import { useResume } from "@/context/ResumeContext";
+
 
 export default function Home() {
 

@@ -13,6 +13,8 @@ export const ProductProvider = ({children})=>{
     const {user} = useSession();
     const [products, setProducts] = useState([]);
     const [lowStockProducts, setLowStockProducts] = useState([]);
+    const [updateProd, setUpdateProd] = useState(null);
+    const [showStockModal, setShowStockModal] = useState(false);
 
     const fetchProducts = async () =>{
         try {
@@ -69,10 +71,10 @@ export const ProductProvider = ({children})=>{
                 pauseOnFocusLoss:false
             })
         })
-    },[user]);
+    },[user, products]);
 
     return(
-        <ProductContext.Provider value={{products, setProducts, lowStockProducts}}>
+        <ProductContext.Provider value={{products, setProducts, lowStockProducts, updateProd, setUpdateProd, showStockModal, setShowStockModal}}>
             {children}
         </ProductContext.Provider>
     )

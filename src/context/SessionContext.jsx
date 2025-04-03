@@ -69,7 +69,6 @@ export const SessionProvider = ({ children }) => {
         try {
             const response = await api.get('/api/session/current');
             const data = response.data;
-            console.log('response: ' + data)
             return data;
         } catch (error) {
             if(error.response){
@@ -87,6 +86,7 @@ export const SessionProvider = ({ children }) => {
             const data = await currentUser();
             if(data.status === 'success'){
                 setUser(data.payload);
+                localStorage.setItem('user', JSON.stringify(data.payload));
                 setLoading(false);
             } else {
                 setLoading(false);

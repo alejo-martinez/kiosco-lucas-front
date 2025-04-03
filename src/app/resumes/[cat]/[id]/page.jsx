@@ -161,7 +161,9 @@ function ResumeId() {
                     <button onClick={handleShowTickets} className='p-1 cursor-pointer bg-blue-400 rounded text-white w-fit'>Cerrar ventas</button>
                     <h4 className="mt-4 text-lg font-semibold text-gray-700 border-b pb-1">Ventas:</h4>
                     <div className="flex flex-col gap-4 mt-2">
-                      {resume.tickets?.map((value, index) => (
+                      {resume.tickets?.map((value, index) =>{
+                          if(user?.role !== 'admin' && value.ticket.seller._id !== user._id) return;
+                        else return (
                         <div key={index} className="flex justify-between items-center bg-gray-100 p-3 rounded-lg shadow-sm">
                           <div className='flex flex-col'>
                             <span className="font-medium">Venta realizada por:  {value.ticket.seller.name}</span>
@@ -172,7 +174,7 @@ function ResumeId() {
                             <span className='text-center text-blue-600 font-bold'><Link href={`/sells/${value.ticket._id}`}>Ver venta</Link></span>
                           </div>
                         </div>
-                      ))}
+                      )})}
                     </div>
                   </div>
                 }

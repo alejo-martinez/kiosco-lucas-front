@@ -5,11 +5,13 @@ import socket from '@/app/utils/socket.config';
 import { useSession } from '@/context/SessionContext';
 import { toast } from 'react-toastify';
 import { useCart } from '@/context/CartContext';
+import { usePathname } from 'next/navigation';
+
 import { useProduct } from '@/context/ProductContext';
 
 function Search() {
 
-    // const inputRef = useRef(null);
+    const pathname = usePathname();
     const {setProducts} = useProduct();
     const { user } = useSession();
     const { cart } = useCart();
@@ -37,7 +39,7 @@ function Search() {
 
             // e.preventDefault();
             setQuerySearch(e.target.value);
-            socket.emit('searchTitle', { query: e.target.value });
+            socket.emit('searchTitle', { query: e.target.value, socketId: socket.id });
         }
     }
 
@@ -48,9 +50,13 @@ function Search() {
 
     const handleSearchByCode = async (e) => {
         if (e.key === 'Enter') {
-            console.log(user)
-            socket.emit('search', { query: e.target.value, cid: user.cart, quantity: 1 });
-            setQuerySearch('');
+            if(pathname === '/'){
+                socket.emit('search', { query: e.target.value, cid: user.cart, quantity: 1 });
+                setQuerySearch('');
+            } else{
+                socket.emit('searchByCode', { code: e.target.value });
+                setQuerySearch('');  
+            }
             // e.target.value = '';
             // inputRef.current.value ="";
         }
@@ -115,31 +121,6 @@ function Search() {
                     </div>
                 </div>
             }
-            {/* <div className="flex justify-center overflow-x-auto">
-                {products.length !== 0 && (
-                    <table className="w-4xl border-collapse border border-gray-300">
-                        <thead>
-                            <tr className="bg-gray-200">
-                                <th className="p-2 border border-gray-300 text-left">Código</th>
-                                <th className="p-2 border border-gray-300 text-left">Producto</th>
-                                <th className="p-2 border border-gray-300 text-right">Precio</th>
-                                <th className="p-2 border border-gray-300 text-right">Stock</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            {products.map((value, index) => (
-                                <tr key={index} className="border-b hover:bg-gray-100 transition">
-                                    <td className="p-2 border border-gray-300">{value.code}</td>
-                                    <td className="p-2 border border-gray-300">{value.title}</td>
-                                    <td className="p-2 border border-gray-300 text-right">${value.sellingPrice}</td>
-                                    <td className="p-2 border border-gray-300 text-right">{value.stock}</td>
-                                    <td className="border border-gray-300 text-center"><button className='bg-blue-600 rounded p-1 text-white hover:cursor-pointer' onClick={(e) => handleAdd(e, value)}>Agregar</button></td>
-                                </tr>
-                            ))}
-                        </tbody>
-                    </table>
-                )}
-            </div> */}
         </div>
     )
 }
