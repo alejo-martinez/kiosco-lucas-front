@@ -6,7 +6,6 @@ import api from "@/app/utils/axios.config";
 
 import { useProduct } from "@/context/ProductContext";
 import { toast } from "react-toastify";
-import socket from "@/app/utils/socket.config";
 
 function AddStock() {
 
@@ -34,7 +33,6 @@ function AddStock() {
                 products[0].stock += Number(inputValue);
                 products[0].totalStock += Number(inputValue);
                 setProducts([])
-                socket.emit('resultTitle', {results:products})
                 toast.success('Stock agregado !', {
                     duration: 3000,
                     pauseOnHover:false,
