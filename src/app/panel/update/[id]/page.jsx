@@ -105,6 +105,10 @@ function UpdateProductById() {
                 setProducto({ ...prod, [e.target.name]: e.target.value });
 
             }
+            // if(name === 'stock'){
+            //     updatedProducto.totalStock = Number(value) + Number(updatedProducto.totalStock);
+            //     setProducto(updatedProducto)
+            // }
 
             return updatedProducto;
         });

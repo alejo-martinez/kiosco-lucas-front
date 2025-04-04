@@ -15,12 +15,15 @@ import { generatePDF } from '../utils/generatePdf';
 import Results from '@/components/Results';
 import AddStock from '@/components/AddStock';
 import NavBar from '@/components/NavBar';
-// import { useProduct } from '@/context/ProductContext';
+import { useProduct } from '@/context/ProductContext';
 
 function Panel() {
 
     const router = useRouter();
     const { user, logout } = useSession();
+    const {setUpdateProd, setShowStockModal} = useProduct();
+
+
     const searchParams = useSearchParams();
     const paramValue = searchParams.get("query");
     const filterParam = searchParams.get("filter");
@@ -32,7 +35,6 @@ function Panel() {
     const [loading, setLoading] = useState(true);
     const [setings, setSetings] = useState({});
 
-
     const fetchData = async () => {
         try {
             const queryParams = new URLSearchParams();
@@ -43,14 +45,23 @@ function Panel() {
                 queryParams.append("valueFilter", valueFilterParam);
             }
 
-            const response = await api.get(`/api/products/filter/?${queryParams.toString()}`);
+            // console.log(queryParams.toString() ? true: false)
+
+            const response = await api.get(`/api/products/filter/?${queryParams.toString() ? queryParams.toString() : 'query=1'}`);
             const data = response.data;
+
             setProducts(data.payload.docs);
             setSetings({ hasNextPage: data.payload.hasNextPage, hasPrevPage: data.payload.hasPrevPage, nextPage: data.payload.nextPage, page: data.payload.page, prevPage: data.payload.prevPage, totalPages: data.payload.totalPages })
             setLoading(false);
         } catch (error) {
             console.log(error);
         }
+    }
+
+    const handleAddStock = (e, prod) => {
+        e.preventDefault();
+        setUpdateProd(prod)
+        setShowStockModal(true);
     }
 
 
@@ -169,7 +180,10 @@ function Panel() {
                         <div>
                             <select onChange={handleChangeFilter}>
                                 <option value="">Selecciona un filtro</option>
-                                <option value="2" data-filter="stock">Menor stock</option>
+                                <option value="1" data-filter="stock">Menor stock</option>
+                                <option value="-1" data-filter="stock">Mayor stock</option>
+                                <option value="1" data-filter="title">A-Z</option>
+                                <option value="-1" data-filter="title">Z-A</option>
                             </select>
                         </div>
                         <div>
@@ -177,7 +191,7 @@ function Panel() {
                                 {setings?.hasPrevPage &&
                                     <div className='flex'>
                                         <button className='text-slate-800 mr-4'>
-                                            <Link href={`/panel?query=${setings.prevPage}`}>
+                                            <Link href={`/panel?query=${setings.prevPage}${!filterParam && !valueFilterParam ? '' : `${filterParam && `&filter=${filterParam}${valueFilterParam && `&valueFilter=${valueFilterParam}`}`}`}`}>
                                                 <ChevronLeftIcon className='h-4 w-4' />
                                             </Link>
                                         </button>
@@ -191,7 +205,7 @@ function Panel() {
                                 {setings?.hasNextPage &&
                                     <div className='flex'>
                                         <button className='text-slate-800 ml-4'>
-                                            <Link href={`/panel?query=${setings.nextPage}`}>
+                                            <Link href={`/panel?query=${setings.nextPage}${!filterParam && !valueFilterParam ? '' : `${filterParam && `&filter=${filterParam}${valueFilterParam && `&valueFilter=${valueFilterParam}`}`}`}`}>
                                                 <ChevronRightIcon className='h-4 w-4' />
                                             </Link>
 
@@ -208,14 +222,14 @@ function Panel() {
                                 <tr className="bg-gray-200 border-b">
                                     <th className="w-1/5 p-2 text-center">Código</th>
                                     <th className="w-1/5 p-2 text-center">Producto</th>
-                                    {user.role === 'admin' &&
+                                    {user?.role === 'admin' &&
                                         <th className="w-1/5 p-2 text-center">Precio de costo</th>
                                     }
                                     <th className="w-1/5 p-2 text-center">Precio de venta</th>
                                     <th className="w-1/5 p-2 text-center">Stock en tienda</th>
                                     <th className="w-1/5 p-2 text-center">Stock total</th>
-                                    {user.role === 'admin' && 
-                                    <th className="w-1/5 p-2 text-center">Porcentaje de ganancia</th>
+                                    {user?.role === 'admin' &&
+                                        <th className="w-1/5 p-2 text-center">Porcentaje de ganancia</th>
                                     }
                                 </tr>
                             </thead>
@@ -224,16 +238,16 @@ function Panel() {
                                     return (
                                         <tr key={index} className="border-b">
                                             <td className="w-1/5 p-2 text-center flex items-center gap-2">
-                                            {user.role === 'admin' && 
-                                                <div className='flex flex-col gap-2'>
-                                                    <button title='Editar' className='p-1 bg-blue-600 text-white font-bold rounded cursor-pointer' onClick={(e) => updateProd(e, value._id)}>I</button>
-                                                    <button title='Eliminar' className='p-1 bg-red-600 text-white font-bold rounded cursor-pointer' onClick={(e) => deleteProduct(e, value._id, index)}>X</button>
-                                                </div>
+                                                {user?.role === 'admin' &&
+                                                    <div className='flex flex-col gap-2'>
+                                                        <button title='Editar' className='p-1 bg-blue-600 text-white font-bold rounded cursor-pointer' onClick={(e) => updateProd(e, value._id)}>I</button>
+                                                        <button title='Eliminar' className='p-1 bg-red-600 text-white font-bold rounded cursor-pointer' onClick={(e) => deleteProduct(e, value._id, index)}>X</button>
+                                                    </div>
                                                 }
                                                 {value.code}</td>
                                             <td className="w-1/5 p-2 text-center">{value.title}</td>
-                                            {user.role === 'admin' && 
-                                            <td className="w-1/5 p-2 text-center">$ {value.costPrice}</td>
+                                            {user?.role === 'admin' &&
+                                                <td className="w-1/5 p-2 text-center">$ {value.costPrice}</td>
                                             }
                                             <td className="w-1/5 p-2 text-center">$ {value.sellingPrice}</td>
                                             <td className="w-1/5 p-2 text-center">
@@ -242,10 +256,11 @@ function Panel() {
                                                         <ExclamationTriangleIcon className={`h-6 w-6 ${value.stock === 0 ? 'text-red-500' : 'text-yellow-500'}`} />
                                                     }
                                                     <span>{value.stock}</span>
+                                                    <button className='bg-green-600 text-white rounded cursor-pointer' onClick={(e)=> handleAddStock(e, value)}>+</button>
                                                 </div></td>
                                             <td className="w-1/5 p-2 text-center">{value.totalStock}</td>
-                                            {user.role === 'admin' &&
-                                            <td className="w-1/5 p-2 text-center">{value.percentage.toFixed(2)}%</td>
+                                            {user?.role === 'admin' &&
+                                                <td className="w-1/5 p-2 text-center">{value.percentage.toFixed(2)}%</td>
                                             }
                                         </tr>
                                     )
@@ -255,7 +270,7 @@ function Panel() {
                     </div>
                 </div>
             }
-            <AddStock />
+            <AddStock setearProducts={setProducts} productos={products} />
         </div>
     )
 }

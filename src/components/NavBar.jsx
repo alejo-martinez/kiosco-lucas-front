@@ -8,6 +8,7 @@ import { useResume } from '@/context/ResumeContext';
 import { useProduct } from '@/context/ProductContext';
 
 import Search from './Search';
+import Loading from './Loading';
 
 function NavBar() {
   const rodrigoId = process.env.NEXT_PUBLIC_RODRIGO_ID;
@@ -19,6 +20,7 @@ function NavBar() {
   const { user } = useSession();
 
   const [actualDate, setActualDate] = useState(null);
+  const [loading, setLoading] = useState(false);
 
   const init = (e)=>{
     e.preventDefault();
@@ -27,8 +29,10 @@ function NavBar() {
 
   const end = async(e)=>{
     e.preventDefault();
+    setLoading(true);
     const response = await endDay();
     router.push(`/resumes/diary/${response}`);
+    setLoading(false);
   }
 
 
@@ -43,7 +47,7 @@ function NavBar() {
     const params = new URLSearchParams();
     params.set('query', 1);
     params.set('filter', 'stock');
-    params.set('valueFilter', 2);
+    params.set('valueFilter', 1);
 
     router.push(`/panel?${params.toString()}`)
   }
@@ -87,6 +91,7 @@ function NavBar() {
          }
         </div>
       </div>
+      {loading && <Loading />}
     </div>
   )
 }

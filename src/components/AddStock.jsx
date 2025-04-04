@@ -3,14 +3,15 @@
 import { Dialog, Transition } from "@headlessui/react";
 import { Fragment, useState } from "react";
 import api from "@/app/utils/axios.config";
+import { useRouter } from "next/navigation";
 
 import { useProduct } from "@/context/ProductContext";
 import { toast } from "react-toastify";
 
-function AddStock() {
+function AddStock({setearProducts, productos}) {
 
     const { showStockModal, setShowStockModal, updateProd, setUpdateProd, products, setProducts } = useProduct();
-
+    const router = useRouter()
     const [inputValue, setInputValue] = useState(0);
 
     const closeModal = () => {
@@ -30,8 +31,15 @@ function AddStock() {
             const response = await api.put(`/api/products/update/${updateProd._id}`, { field: 'stock', value: inputValue });
             const data = response.data;
             if(data.status === 'success'){
-                products[0].stock += Number(inputValue);
-                products[0].totalStock += Number(inputValue);
+                // console.log(data.payload);
+                const prods = [...productos];
+                
+                const index = prods.findIndex(p => p._id === data.payload._id);
+                const newProducts = data.payload;
+                newProducts.stock += Number(inputValue);
+                newProducts.totalStock += Number(inputValue);
+                prods.splice(index, 1, newProducts);
+                setearProducts(prods)
                 setProducts([])
                 toast.success('Stock agregado !', {
                     duration: 3000,
@@ -39,16 +47,31 @@ function AddStock() {
                     hideProgressBar:true,
                     pauseOnFocusLoss:false
                 })
+                setInputValue(0)
                 setShowStockModal(false);
                 
             }
         } catch (error) {
-            toast.error(`Error al actualizar el producto: ${error.message}`,{
-                duration: 3000,
-                pauseOnHover:false,
-                hideProgressBar:true,
-                pauseOnFocusLoss:false
-            })
+            if (error.status === 403) {
+                toast.error(error.response.data.error, {
+                    duration: 2000,
+                    pauseOnFocusLoss: false,
+                    pauseOnHover: false,
+                    hideProgressBar: true,
+                    closeButton: false
+                });
+                router.push('/login')
+                return error.response.data
+            } else {
+                console.log(error);
+                toast.error(`Error al actualizar el producto: ${error.message}`,{
+                    duration: 3000,
+                    pauseOnHover:false,
+                    hideProgressBar:true,
+                    pauseOnFocusLoss:false
+                })
+                return error;
+            }
         }
     }
 
@@ -92,4 +115,4 @@ function AddStock() {
     )
 }
 
-export default AddStock
+export default AddStock;

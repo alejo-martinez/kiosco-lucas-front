@@ -3,11 +3,15 @@
 import React, { useEffect, useState } from 'react';
 import { useCart } from '@/context/CartContext';
 import api from '@/app/utils/axios.config';
+import { useRouter } from 'next/navigation';
 import { toast } from 'react-toastify';
 import { useResume } from '@/context/ResumeContext';
+
 function Payment() {
 
-    const {resumeId} = useResume();
+    const router = useRouter();
+
+    const { resumeId } = useResume();
     const [amount, setAmount] = useState(0);
     const [paymentMethod, setPaymentMethod] = useState('eft');
     const [payment, setPayment] = useState(0);
@@ -63,15 +67,29 @@ function Payment() {
                 })
             }
         } catch (error) {
-            if (error.response) {
+            if (error.status === 403) {
+                toast.error(error.response.data.error, {
+                    duration: 2000,
+                    pauseOnFocusLoss: false,
+                    pauseOnHover: false,
+                    hideProgressBar: true,
+                    closeButton: false
+                });
+                router.push('/login')
+                return error.response.data
+            } else if (error.response) {
                 toast.error(error.response.data.error, {
                     duration: 3000
                 })
-            }
-            else {
+            } else {
+                console.log(error);
                 toast.error(error.message, {
-                    duration: 3000
+                    duration: 2000,
+                    hideProgressBar: true,
+                    pauseOnHover: false,
+                    pauseOnFocusLoss: false
                 })
+                return error;
             }
         }
     }
@@ -89,7 +107,7 @@ function Payment() {
                 }
                 if (vueltoResult > 0) setVuelto(vueltoResult)
             }
-            const response = await api.post('/api/ticket/create', { amount: amount, payment_method: paymentMethod, rid: resumeId});
+            const response = await api.post('/api/ticket/create', { amount: amount, payment_method: paymentMethod, rid: resumeId });
             const data = response.data;
             setPayment(0)
             setAmount(0);
@@ -100,16 +118,31 @@ function Payment() {
                 hideProgressBar: true
             })
         } catch (error) {
-            if (error.response) {
+            if (error.status === 403) {
+                toast.error(error.response.data.error, {
+                    duration: 2000,
+                    pauseOnFocusLoss: false,
+                    pauseOnHover: false,
+                    hideProgressBar: true,
+                    closeButton: false
+                });
+                router.push('/login')
+                return error.response.data
+            } else if (error.response) {
                 toast.error(error.response.data.error, {
                     duration: 3000
                 })
-            }
-            else {
+            } else {
+                console.log(error);
                 toast.error(error.message, {
-                    duration: 3000
+                    duration: 2000,
+                    hideProgressBar: true,
+                    pauseOnHover: false,
+                    pauseOnFocusLoss: false
                 })
+                return error;
             }
+
         }
     }
 
@@ -133,12 +166,12 @@ function Payment() {
                     <span className='text-2xl'>Abona:</span>
                     <div className='flex items-center justify-end'>
                         <span className='font-bold text-xl mr-1'>$</span>
-                        <input type="number" name='pay' value={payment} className='border rounded w-2/5 p-1' onChange={handlePayment} onKeyDown={enterSell}/>
+                        <input type="number" name='pay' value={payment} className='border rounded w-2/5 p-1' onChange={handlePayment} onKeyDown={enterSell} />
                     </div>
                 </div>
                 {vuelto > 0 &&
                     <div className='flex flex-col'>
-                        <span>Vuelto: ${vuelto}</span>
+                        <span>Vuelto: ${vuelto.toFixed(2)}</span>
                         <button onClick={cleanVuelto} className='bg-blue-600 p-1 rounded text-white cursor-pointer'>Limpiar</button>
                     </div>
                 }

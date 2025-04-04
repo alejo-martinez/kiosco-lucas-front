@@ -1,17 +1,18 @@
 'use client';
 
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect, useRef, use } from 'react';
 import { useCart } from '@/context/CartContext';
 import socket from '@/app/utils/socket.config';
 import { useSession } from '@/context/SessionContext';
 import { toast } from 'react-toastify';
 import api from '@/app/utils/axios.config';
 import Results from './Results';
+// import { useRouter } from 'next/navigation';
 
 function Sell() {
 
     const isProcessing = useRef(false);
-
+    // const router = useRouter()
     const { cart, emptyCart, removeProductById } = useCart();
     const {user} = useSession();
 
@@ -40,23 +41,30 @@ function Sell() {
     const clearCart = async(e)=>{
         e.preventDefault();
         const response = await emptyCart(user.cart);
-        toast.success(response.message, {
-            duration:3000,
-            pauseOnHover:false,
-            closeButton:false,
-            hideProgressBar:true
-        })
+        console.log(response)
+        if(response.status === 'success'){
+
+            toast.success(response.message, {
+                duration:3000,
+                pauseOnHover:false,
+                closeButton:false,
+                hideProgressBar:true
+            })
+        }
     }
 
     const removeProduct = async(e, pid)=>{
         e.preventDefault();
         const response = await removeProductById(pid);
-        toast.success('Producto eliminado de la venta', {
-            duration:3000,
-            pauseOnHover:false,
-            closeButton:false,
-            hideProgressBar:true
-        })
+        if(response.status === 'success'){
+
+            toast.success('Producto eliminado de la venta', {
+                duration:3000,
+                pauseOnHover:false,
+                closeButton:false,
+                hideProgressBar:true
+            })
+        }
     }
 
     useEffect(()=>{
