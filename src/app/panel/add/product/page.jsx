@@ -129,8 +129,8 @@ function AddProduct() {
                         </div>
                         <div className="flex flex-col">
                             <label className="text-gray-600">Total stock</label>
-                            <span>{producto.totalStock}</span>
-                            {/* <input type="number" name="totalStock" className="border rounded p-2" onChange={handleChange} value={producto.totalStock} /> */}
+                            {/* <span>{producto.totalStock}</span> */}
+                            <input type="number" name="totalStock" className="border rounded p-2" onChange={handleChange} value={producto.totalStock} />
                         </div>
                         <div className="flex flex-col">
                             <label className="text-gray-600">Porcentaje de ganancia</label>

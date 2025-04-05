@@ -27,7 +27,7 @@ export const CartProvider = ({ children }) => {
     const emptyCart = async (cid) => {
         try {
             const response = await api.delete(`/api/cart/empty/${cid}`);
-            console.log(response)
+
             const data = response.data;
             if (data.status === 'success') setCart(data.payload);
             return data;
