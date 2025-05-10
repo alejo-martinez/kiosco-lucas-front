@@ -9,13 +9,13 @@ import Sidebar from '@/components/Sidebar';
 import { useSession } from '@/context/SessionContext';
 import Link from 'next/link';
 import { ChevronRightIcon, ChevronLeftIcon } from '@heroicons/react/24/solid';
-import AdminRoute from '@/components/AdminRoute';
+
 
 
 function Resumes() {
     const { cat } = useParams();
     const searchParams = useSearchParams();
-    const paramValue = searchParams.get("page");
+    const paramValue = searchParams.get("query");
     const { user } = useSession();
 
     const [resumes, setResumes] = useState([]);
@@ -83,7 +83,7 @@ function Resumes() {
                         {setings?.hasPrevPage &&
                             <div className='flex'>
                                 <button className='text-slate-800 mr-4'>
-                                    <Link href={`/resumes?query=${setings.prevPage}`}>
+                                    <Link href={`/resumes/diary?query=${setings.prevPage}`}>
                                         <ChevronLeftIcon className='h-4 w-4' />
                                     </Link>
                                 </button>
@@ -97,7 +97,7 @@ function Resumes() {
                         {setings?.hasNextPage &&
                             <div className='flex'>
                                 <button className='text-slate-800 ml-4'>
-                                    <Link href={`/resumes?query=${setings.nextPage}`}>
+                                    <Link href={`/resumes/diary?query=${setings.nextPage}`}>
                                         <ChevronRightIcon className='h-4 w-4' />
                                     </Link>
 
@@ -111,6 +111,7 @@ function Resumes() {
                         <tr className="bg-gray-200 border-b">
                             <th className="w-1/5 p-2 text-center">Día de la jornada</th>
                             <th className="w-1/5 p-2 text-center">Ventas</th>
+                            <th className="w-1/5 p-2 text-center">Consumos</th>
                             <th className="w-1/5 p-2 text-center">Total vendido</th>
                             <th className="w-1/5 p-2 text-center"></th>
                         </tr>
@@ -121,12 +122,10 @@ function Resumes() {
                                 <tr key={index} className="border-b">
                                     <td className="w-1/5 p-2 text-center">{formatDate(value.init_date.init)}</td>
                                     <td className="w-1/5 p-2 text-center">{value.sales > 1 ? `${value.sales} ventas` : value.sales === 0 ? `Sin ventas` : `${value.sales} venta`}</td>
-                                    <td className="w-1/5 p-2 text-center">${value.amount}</td>
-                                    {value.finish_date ? 
-                                    <td className="w-1/5 p-2 text-center"><Link href={`/resumes/diary/${value._id}`}>Ver detalles</Link></td>
-                                    :
-                                    <td className="w-1/5 p-2 text-center"><span>Jornada en curso</span></td>
-                                    }
+                                    <td className="w-1/5 p-2 text-center">{value.expenses?.length > 1 ? `${value.expenses?.length} consumos` : (value.expenses?.length === 0 || !value.expenses) ? `Sin consumos` : `${value.expenses?.length} consumo`}</td>
+                                    <td className="w-1/5 p-2 text-center">${value.amount.toFixed(2)}</td>
+                                    <td className="w-1/5 p-2 text-center"><Link href={`/resumes/diary/${value._id}`}>{value.finish_date ? 'Ver detalles' : 'Ver jornada en curso'}</Link></td>
+           
                                 </tr>
                             )
                         })}

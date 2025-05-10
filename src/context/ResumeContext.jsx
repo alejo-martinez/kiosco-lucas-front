@@ -11,6 +11,7 @@ export const ResumeProvider = ({ children }) => {
 
     const router = useRouter();
     const [showModal, setShowModal] = useState(false);
+    const [showExpenseModal, setShowExpenseModal] = useState(false);
     const [resumeId, setResumeId] = useState(null);
 
     const fetchActiveResume = async () => {
@@ -21,7 +22,7 @@ export const ResumeProvider = ({ children }) => {
                 const payload = data.payload;
                 if (payload) {
                     setResumeId(payload._id);
-                    localStorage.setItem('resumeId', payload.id);
+                    localStorage.setItem('resumeId', payload._id);
                 } else {
                     setShowModal(true);
                 }
@@ -34,7 +35,9 @@ export const ResumeProvider = ({ children }) => {
 
     useEffect(() => {
         const resumeExist = localStorage.getItem('resumeId');
-        if (!resumeExist) {
+        
+        if (!resumeExist || resumeExist === 'undefined') {
+            
             fetchActiveResume();
         }
         else setResumeId(resumeExist);
@@ -123,7 +126,7 @@ export const ResumeProvider = ({ children }) => {
 
 
     return (
-        <ResumeContext.Provider value={{ showModal, setShowModal, createResume, resumeId, initDay, endDay }}>
+        <ResumeContext.Provider value={{ showModal, setShowModal, createResume, resumeId, initDay, endDay, setShowExpenseModal, showExpenseModal }}>
             {children}
         </ResumeContext.Provider>
     )

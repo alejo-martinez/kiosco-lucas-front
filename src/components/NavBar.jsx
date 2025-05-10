@@ -14,7 +14,7 @@ function NavBar() {
   const rodrigoId = process.env.NEXT_PUBLIC_RODRIGO_ID;
 
   const router = useRouter();
-  const { resumeId, initDay, endDay } = useResume();
+  const { resumeId, initDay, endDay, setShowExpenseModal } = useResume();
   
   const {lowStockProducts} = useProduct();
   const { user } = useSession();
@@ -57,17 +57,24 @@ function NavBar() {
     router.push('/panel')
   }
 
+  const openExpenseModal = (e)=>{
+    e.preventDefault();
+    setShowExpenseModal(true);
+  }
+
   useEffect(() => {
     formatDateForUser();
   }, []);
 
   return (
     <div className='flex'>
+      <div className='flex flex-col h-fit flex-wrap items-center self-center gap-3'>
       {rodrigoId === user?._id && 
-        <div className='flex h-fit flex-wrap items-center self-center'>
           <button className='cursor-pointer px-6 py-3 font-bold text-white rounded-lg bg-blue-600' onClick={navigateAddStock}>Cargar productos</button>
+        }
+        {user?.role !== 'admin' &&
+        <button className='cursor-pointer px-6 py-3 font-bold text-white rounded-lg bg-orange-600' onClick={openExpenseModal}>Agregar consumos</button>}
         </div>
-      }
       {(lowStockProducts.length > 0 && user?.role === 'admin') &&
       <div className='flex h-fit flex-wrap items-center self-center'>
         <button className='cursor-pointer px-6 py-3 font-bold text-white rounded-lg bg-red-600 shadow-lg animate-[glow_1.5s_infinite_alternate]' onClick={navigateToLowProducts}>Productos de bajo Stock</button>

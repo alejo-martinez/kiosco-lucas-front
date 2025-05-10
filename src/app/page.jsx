@@ -8,11 +8,10 @@ import Sell from "@/components/Sell";
 import Search from "@/components/Search";
 import Sidebar from "@/components/Sidebar";
 import InitModal from "@/components/InitModal";
+import ExpenseModal from "@/components/ExpenseModal";
 
 
 export default function Home() {
-
-  // const {showModal, setShowModal} = useResume();
 
 
   return (
@@ -32,6 +31,7 @@ export default function Home() {
         <Payment />
       </div>
       <InitModal />
+      <ExpenseModal />
     </div>
   );
 }

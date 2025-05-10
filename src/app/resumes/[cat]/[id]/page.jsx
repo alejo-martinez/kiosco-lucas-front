@@ -12,14 +12,15 @@ import AdminRoute from '@/components/AdminRoute';
 
 function ResumeId() {
 
+  const percentageSellers = process.env.NEXT_PUBLIC_DESCUENTO_VENDEDORES;
+
   const params = useParams();
   const { user } = useSession();
   const [resume, setResume] = useState(null);
   const [loading, setLoading] = useState(true);
   const [actualDate, setActualDate] = useState(null);
   const [showTickets, setShowTickets] = useState(false);
-  console.log(resume)
-
+  const [showExpenses, setShowExpenses] = useState(false);
   const formatDateForUser = () => {
     const date = new Date();
     const options = { weekday: "long", day: "numeric", month: "long" };
@@ -75,6 +76,11 @@ function ResumeId() {
     }
   }
 
+  const handleShowExpenses = (e) =>{
+    e.preventDefault();
+    setShowExpenses(!showExpenses);
+  }
+
   const handleShowTickets = (e) => {
     e.preventDefault();
     setShowTickets(!showTickets);
@@ -97,9 +103,6 @@ function ResumeId() {
               <div className='flex flex-col p-3'>
                 <span>Usuario activo: {user.name}</span>
                 <span>{actualDate}</span>
-                <div className=''>
-                  {/* <Link href={"/panel"} className='text-center p-1 bg-blue-200 rounded font-bold'>Volver</Link> */}
-                </div>
               </div>
             }
           </div>
@@ -111,7 +114,8 @@ function ResumeId() {
                 Jornada iniciada: {formatDate(resume.init_date.init)} hs
               </h4>
               <h4 className="text-2xl font-bold text-gray-800 border-b pb-2">
-                Jornada finalizada: {formatDate(resume.finish_date.end)} hs
+                {resume.finish_date && `Jornada finalizada: ${formatDate(resume.finish_date.end)} hs`}
+              
               </h4>
 
               {/* Datos del vendedor */}
@@ -122,9 +126,16 @@ function ResumeId() {
                   <span className="font-semibold text-gray-800 ml-2">{resume.init_date.seller.name}</span>
                 </div>
                 <div>
-
+                {resume.finish_date? 
+                <div>
                   <span className="text-gray-600 text-sm">Cerró:</span>
                   <span className="font-semibold text-gray-800 ml-2">{resume.finish_date.seller.name}</span>
+                </div>
+                :
+                <div>
+                  <span className="text-gray-600 font-bold text-sm">Jornada en curso</span>
+                </div>
+                }
                 </div>
                 <div>
 
@@ -161,23 +172,49 @@ function ResumeId() {
                     <button onClick={handleShowTickets} className='p-1 cursor-pointer bg-blue-400 rounded text-white w-fit'>Cerrar ventas</button>
                     <h4 className="mt-4 text-lg font-semibold text-gray-700 border-b pb-1">Ventas:</h4>
                     <div className="flex flex-col gap-4 mt-2">
-                      {resume.tickets?.map((value, index) =>{
-                          if(user?.role !== 'admin' && value.ticket.seller._id !== user._id) return;
+                      {resume.tickets?.map((value, index) => {
+                        if (user?.role !== 'admin' && value.ticket.seller._id !== user?._id) return;
                         else return (
-                        <div key={index} className="flex justify-between items-center bg-gray-100 p-3 rounded-lg shadow-sm">
-                          <div className='flex flex-col'>
-                            <span className="font-medium">Venta realizada por:  {value.ticket.seller.name}</span>
-                            <span className="text-sm text-gray-600">Realizada el: {formatDate(value.ticket.created_at)}</span>
-                            <span className="text-sm text-gray-600">Productos vendidos: {value.ticket.products.length}</span>
-                            <span className="text-sm text-gray-600">Medio de pago: {formatPaymentMethod(value.ticket.payment_method)}</span>
-                            <span className="text-sm text-gray-600">Total: ${value.ticket.amount}</span>
-                            <span className='text-center text-blue-600 font-bold'><Link href={`/sells/${value.ticket._id}`}>Ver venta</Link></span>
+                          <div key={index} className="flex justify-between items-center bg-gray-100 p-3 rounded-lg shadow-sm">
+                            <div className='flex flex-col'>
+                              <span className="font-medium">Venta realizada por:  {value.ticket.seller.name}</span>
+                              <span className="text-sm text-gray-600">Realizada el: {formatDate(value.ticket.created_at)}</span>
+                              <span className="text-sm text-gray-600">Productos vendidos: {value.ticket.products.length}</span>
+                              <span className="text-sm text-gray-600">Medio de pago: {formatPaymentMethod(value.ticket.payment_method)}</span>
+                              <span className="text-sm text-gray-600">Total: ${value.ticket.amount}</span>
+                              <span className='text-center text-blue-600 font-bold'><Link href={`/sells/${value.ticket._id}`}>Ver venta</Link></span>
+                            </div>
                           </div>
-                        </div>
-                      )})}
+                        )
+                      })}
                     </div>
                   </div>
                 }
+                {user?.role === 'admin' &&(
+                  !showExpenses ?
+                    <button onClick={handleShowExpenses} className='p-1 cursor-pointer bg-blue-400 rounded text-white w-fit'>Mostrar consumos</button>
+                    :
+                    <div>
+                      <button onClick={handleShowExpenses} className='p-1 cursor-pointer bg-blue-400 rounded text-white w-fit'>Cerrar consumos</button>
+                      <h4 className="mt-4 text-lg font-semibold text-gray-700 border-b pb-1">Consumos:</h4>
+                      <div className="flex flex-col gap-4 mt-2">
+                        {resume.expenses?.map((value, index) => {
+                          if (user?.role !== 'admin' && value.expense.user._id !== user?._id) return;
+                          else return (
+                            <div key={index} className="flex justify-between items-center bg-gray-100 p-3 rounded-lg shadow-sm">
+                              <div className='flex flex-col'>
+                                <span className="font-medium">Consumo de: {value.expense.user.name}</span>
+                                <span className="text-sm text-gray-600">Realizado el: {formatDate(value.expense.created_at)}</span>
+                                <span className="text-sm text-gray-600">Producto: {value.expense.product.title}</span>
+                                <span className="text-sm text-gray-600">Cantidad: {value.expense.quantity}</span>
+                                <span className="text-sm text-gray-600">Total a pagar: ${((value.expense.product.sellingPrice * percentageSellers) * value.expense.quantity).toFixed(2)}</span>
+                              </div>
+                            </div>
+                          )
+                        })}
+                      </div>
+                    </div>
+                )}
               </div>
               <h4 className="mt-4 text-lg font-semibold text-gray-700 border-b pb-1">Métodos de pago:</h4>
               <div className="flex flex-col gap-4 mt-2">
@@ -195,7 +232,7 @@ function ResumeId() {
               <div className="mt-6 border-t pt-4">
                 <div className="flex justify-between text-lg font-semibold text-gray-800">
                   <span>Total vendido:</span>
-                  <span>${resume.amount}</span>
+                  <span>${resume.amount.toFixed(2)}</span>
                 </div>
               </div>
             </div>

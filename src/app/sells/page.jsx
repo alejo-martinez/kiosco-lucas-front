@@ -132,6 +132,7 @@ function Sells() {
                         }
                     </div> */}
                 </div>
+                {tickets.length !== 0 ?
                 <table className="w-full table-fixed border-collapse">
                     <thead>
                         <tr className="bg-gray-200 border-b">
@@ -147,7 +148,7 @@ function Sells() {
                             for (let index = 0; index < value.products.length; index++) {
                                 const element = value.products[index];
                                 quantity += element.quantity;
-
+                                
                             }
                             return (
                                 <tr key={index} className="border-b">
@@ -160,6 +161,9 @@ function Sells() {
                         })}
                     </tbody>
                 </table>
+                    : 
+                    <p className='text-center'>No hay ventas</p>
+                    }
             </div>
         </div>
     )

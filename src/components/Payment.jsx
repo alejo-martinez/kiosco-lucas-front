@@ -97,7 +97,7 @@ function Payment() {
     const completeSell = async (e) => {
         try {
             e.preventDefault();
-            if (payment === 0) {
+            if (payment === 0 && paymentMethod === 'eft') {
                 throw new Error('Monto insuficiente');
             }
             if (payment > 0) {
@@ -160,22 +160,24 @@ function Payment() {
                 <h4 className='text-3xl'>Total a pagar:</h4>
                 <span className='text-3xl'>${amount}</span>
             </div>
-            <div className='flex flex-col justify-between items-center gap-6'>
-                <div className='flex'>
+            {paymentMethod === 'eft' &&
+                <div className='flex flex-col justify-between items-center gap-6'>
+                    <div className='flex'>
 
-                    <span className='text-2xl'>Abona:</span>
-                    <div className='flex items-center justify-end'>
-                        <span className='font-bold text-xl mr-1'>$</span>
-                        <input type="number" name='pay' value={payment} className='border rounded w-2/5 p-1' onChange={handlePayment} onKeyDown={enterSell} />
+                        <span className='text-2xl'>Abona:</span>
+                        <div className='flex items-center justify-end'>
+                            <span className='font-bold text-xl mr-1'>$</span>
+                            <input type="number" name='pay' value={payment} className='border rounded w-2/5 p-1' onChange={handlePayment} onKeyDown={enterSell} />
+                        </div>
                     </div>
+                    {vuelto > 0 &&
+                        <div className='flex flex-col'>
+                            <span>Vuelto: ${vuelto.toFixed(2)}</span>
+                            <button onClick={cleanVuelto} className='bg-blue-600 p-1 rounded text-white cursor-pointer'>Limpiar</button>
+                        </div>
+                    }
                 </div>
-                {vuelto > 0 &&
-                    <div className='flex flex-col'>
-                        <span>Vuelto: ${vuelto.toFixed(2)}</span>
-                        <button onClick={cleanVuelto} className='bg-blue-600 p-1 rounded text-white cursor-pointer'>Limpiar</button>
-                    </div>
-                }
-            </div>
+            }
             <div className='flex justify-between'>
                 <span>Medio de pago:</span>
                 <select name="payment_method" onChange={handleChange} className='rounded border w-2/5'>
@@ -187,7 +189,7 @@ function Payment() {
             </div>
             <div className='flex flex-col gap-4'>
                 <button className='border rounded p-1 w-fit bg-green-500 text-white border-black transition-all duration-300 hover:cursor-pointer hover:bg-green-900 hover:cursor-pointer' onClick={completeSell}>Realizar venta</button>
-                {/* <button className='border rounded p-1 w-fit bg-blue-500 text-white border-black transition-all duration-300 hover:cursor-pointer hover:bg-blue-900' onClick={completeSell}>Realizar venta con pago justo</button> */}
+
             </div>
         </div>
     )
