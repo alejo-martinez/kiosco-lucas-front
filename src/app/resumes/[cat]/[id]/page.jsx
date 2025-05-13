@@ -8,6 +8,8 @@ import Sidebar from '@/components/Sidebar';
 import Link from 'next/link';
 import { useSession } from '@/context/SessionContext';
 import AdminRoute from '@/components/AdminRoute';
+import generateStats from '@/app/utils/generateStatics';
+import Statics from '@/components/Statics';
 
 
 function ResumeId() {
@@ -21,6 +23,9 @@ function ResumeId() {
   const [actualDate, setActualDate] = useState(null);
   const [showTickets, setShowTickets] = useState(false);
   const [showExpenses, setShowExpenses] = useState(false);
+  const [statics, setStatics] = useState(null);
+
+
   const formatDateForUser = () => {
     const date = new Date();
     const options = { weekday: "long", day: "numeric", month: "long" };
@@ -64,6 +69,8 @@ function ResumeId() {
     try {
       const response = await api.get(`/api/resume/summary/${params.id}`);
       const data = response.data;
+      const resumeStatics = generateStats(data.payload);
+      setStatics(resumeStatics);
       setResume(data.payload);
       setLoading(false);
     } catch (error) {
@@ -236,6 +243,7 @@ function ResumeId() {
                 </div>
               </div>
             </div>
+          {/* <Statics stats={statics} /> */}
           </div>
         </div>
       }

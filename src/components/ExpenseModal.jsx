@@ -139,7 +139,7 @@ export default function ExpenseModal() {
                                             <button className="cursor-pointer" onClick={plusExpense}>+</button>
                                         }
                                     </div>
-                                    <span>Precio para el vendedor: ${((prod.sellingPrice * 0.2) * quantityValue).toFixed(2)}</span>
+                                    <span>Precio para el vendedor: ${((prod.sellingPrice * 0.8) * quantityValue).toFixed(2)}</span>
                                 </div>
                             }
 
