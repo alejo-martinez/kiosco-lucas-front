@@ -1,0 +1,40 @@
+.sidebar {
+    display: flex;
+    flex-direction: column;
+    padding: $spacing-8;
+    box-shadow: $shadow-flat;
+    border-radius: $border-radius-8;
+    background-color: white;
+
+    position: sticky;
+    top: $spacing-24;
+    align-self: flex-start;
+
+    & a {
+        display: flex;
+        padding: $spacing-8 $spacing-16;
+        margin-bottom: $spacing-16;
+        font-weight: $font-weight-bold;
+        border-radius: $border-radius-8;
+        transition: $transition-5;
+        color: unset;
+        text-decoration: none;
+
+        & div {
+            width: $spacing-16;
+            margin-right: $spacing-16;
+        }
+
+        &:hover {
+            background-color: oklch(98.5% 0.002 247.839);
+        }
+
+        &.active {
+            background-color: oklch(98.5% 0.002 247.839);
+        }
+    }
+
+    & .button {
+        margin-top: auto;
+    }
+}

@@ -1,0 +1,72 @@
+.header {
+    display: flex;
+    justify-content: space-between;
+    padding: $spacing-8;
+    margin-bottom: $spacing-24;
+    border-radius: $border-radius-8;
+    box-shadow: $shadow-flat;
+    background-color: white;
+
+    &__actions {
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+
+        & .button:first-child {
+            position: relative;
+            margin-bottom: $spacing-8;
+        }
+
+        & .button:first-child span {
+            width: $spacing-24;
+            height: $spacing-24;
+            position: absolute;
+            padding: $spacing-4;
+            border-radius: $border-radus-50p;
+            box-shadow: $shadow-flat;
+            color: white;
+            top: -$spacing-12;
+            right: -$spacing-12;
+            background-color: oklch(63.7% 0.237 25.331);
+        }
+
+    }
+
+    &__searcher {
+        display: flex;
+        align-items: center;
+
+        & .searcher {
+            margin-right: $spacing-16;
+        }
+
+        & div:last-child {
+            display: flex;
+            flex-direction: column;
+        }
+
+        & div:last-child .checkbox:first-child {
+            margin-bottom: $spacing-8;
+        }
+    }
+
+    &__active-user {
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+
+        & p:first-child {
+            margin-bottom: $spacing-8;
+            font-weight: $font-weight-semibold
+        }
+
+        & span {
+            font-weight: $font-weight-regular;
+        }
+
+        & .button {
+            width: 100%;
+            margin-top: $spacing-8;
+        }
+    }
+}

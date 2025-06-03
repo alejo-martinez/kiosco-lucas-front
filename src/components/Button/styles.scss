@@ -1,0 +1,32 @@
+.button {
+    padding: $spacing-8;
+    border-radius: $border-radius-8;
+    background-color: oklch(93.2% 0.032 255.585);
+    color: oklch(62.3% 0.214 259.815);
+    font-weight: $font-weight-semibold;
+    transition: $transition-5;
+    border: none;
+    cursor: pointer;
+
+    &:hover {
+        background-color: oklch(88.2% 0.059 254.128);
+    }
+
+    &--red {
+        background-color: oklch(93.6% 0.032 17.717);
+        color: oklch(63.7% 0.237 25.331);
+
+        &:hover {
+            background-color: oklch(88.5% 0.062 18.334);
+        }
+    }
+
+    &--green {
+        background-color: oklch(96.2% 0.044 156.743);
+        color: oklch(72.3% 0.219 149.579);
+
+        &:hover {
+            background-color: oklch(92.5% 0.084 155.995);
+        }
+    }
+}

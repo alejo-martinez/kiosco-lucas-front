@@ -1,0 +1,33 @@
+.input {
+    padding: $spacing-8;
+    border-radius: $border-radius-8;
+    background-color: oklch(96.7% 0.003 264.542);
+    cursor: text;
+
+    & span {
+        text-align: center;
+        width: $spacing-16;
+        font-weight: $font-weight-semibold;
+        margin-right: $spacing-16;
+    }
+
+    & input {
+        background-color: unset;
+        border: unset;
+
+        &:focus {
+            outline: none;
+        }
+    }
+
+    input[type="number"] {
+        -moz-appearance: textfield;
+        appearance: textfield;
+    }
+
+    input[type="number"]::-webkit-outer-spin-button,
+    input[type="number"]::-webkit-inner-spin-button {
+        -webkit-appearance: none;
+        margin: 0;
+    }
+}

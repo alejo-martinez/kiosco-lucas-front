@@ -1,0 +1,22 @@
+.tooltip {
+    position: relative;
+    display: inline-block;
+
+    &__component {
+        z-index: 1;
+        display: none;
+        position: absolute;
+        background-color: white;
+        box-shadow: $shadow-flat;
+        border-radius: $border-radius-8;
+        padding: $spacing-8;
+        width: max-content;
+        top: 100%;
+        left: 50%;
+        transform: translateX(-50%);
+    }
+
+    &:hover .tooltip__component {
+        display: block;
+    }
+}

@@ -1,0 +1,27 @@
+@import 'variables';
+@import 'common';
+@import 'mixins';
+
+@import '../components/Button/styles.scss';
+@import '../components/Card/styles.scss';
+@import '../components/Cart/styles.scss';
+@import '../components/Checkbox/styles.scss';
+@import '../components/Dropdown/styles.scss';
+@import '../components/Header/styles.scss';
+@import '../components/Input/styles.scss';
+@import '../components/Modal/styles.scss';
+@import '../components/Pagination/styles.scss';
+@import '../components/Payment/styles.scss';
+@import '../components/Protected/styles.scss';
+@import '../components/Sales/styles.scss';
+@import '../components/Searcher/styles.scss';
+@import '../components/Shifts/styles.scss';
+@import '../components/Sidebar/styles.scss';
+@import '../components/Stock/styles.scss';
+@import '../components/Tooltip/styles.scss';
+
+@import '../app/panel/styles.scss';
+@import '../app/sells/styles.scss';
+
+@import '../app/resumes/[cat]/[id]/styles.scss';
+@import '../app/panel/add/product/styles.scss';

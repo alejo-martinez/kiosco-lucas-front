@@ -1,0 +1,60 @@
+.stock {
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+
+    &__table {
+        width: 100%;
+        background-color: white;
+        border-radius: $border-radius-8;
+        box-shadow: $shadow-flat;
+        border-collapse: collapse;
+
+        & thead {
+            border-bottom: 1px solid oklch(92.8% 0.006 264.531);
+        }
+
+        & tbody tr:not(:last-child) {
+            border-bottom: 1px solid oklch(96.7% 0.003 264.542);
+        }
+
+        & thead tr th {
+            padding: $spacing-16;
+        }
+
+        & tbody tr td {
+            padding: $spacing-16;
+        }
+
+        & tbody tr td:nth-child(3) .button {
+            margin: 0 $spacing-16;
+            background-color: unset;
+        }
+
+        &__notification {
+            display: inline-block;
+            color: white;
+            width: $spacing-16;
+            height: $spacing-16;
+            border-radius: $border-radus-50p;
+            margin-left: $spacing-8;
+            cursor: pointer;
+
+            &--danger {
+                background-color: oklch(63.7% 0.237 25.331);
+            }
+
+            &--warning {
+                background-color: oklch(70.5% 0.213 47.604);
+            }
+        }
+
+        & tbody tr td:not(:last-child) {
+            border-right: 1px solid oklch(96.7% 0.003 264.542);
+        }
+
+        & tbody tr td:last-child .button {
+            margin-right: $spacing-8;
+        }
+    }
+}

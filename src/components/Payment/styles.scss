@@ -1,0 +1,40 @@
+.payment {
+    width: 25%;
+    padding: $spacing-8;
+    background-color: white;
+    box-shadow: $shadow-flat;
+    border-radius: $border-radius-8;
+
+    &>div {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: $spacing-8;
+    }
+
+    &>div:first-child span {
+        font-weight: $font-weight-semibold;
+        font-size: $font-size-24;
+    }
+
+    &>div:first-child {
+        margin-bottom: $spacing-16;
+    }
+
+    &>div:nth-child(4) {
+        margin-top: $spacing-16;
+    }
+
+    &>div:nth-child(4) span {
+        font-weight: $font-weight-semibold;
+    }
+
+    &>div p {
+        font-size: $font-size-18;
+    }
+
+    & .button {
+        width: 100%;
+        margin-top: $spacing-8;
+    }
+}
