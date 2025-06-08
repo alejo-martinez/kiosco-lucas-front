@@ -67,3 +67,20 @@ p {
         color: oklch(55.1% 0.027 264.364);
     }
 }
+
+.toast-error{
+  background-color: #2f1c1c !important;
+  color: #ff6b6b !important;
+}
+
+.toast-success{
+  background-color: #e6fff4 !important;
+  color: #1a7f5a !important;
+}
+
+.products__expense{
+    display: flex;
+    flex-flow: column nowrap;
+    gap: 10px;
+    margin-top: 10px;
+}

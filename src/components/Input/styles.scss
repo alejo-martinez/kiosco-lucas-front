@@ -14,8 +14,8 @@
     & input {
         background-color: unset;
         border: unset;
-
-        &:focus {
+        width: 100%;
+        &:focus {   
             outline: none;
         }
     }

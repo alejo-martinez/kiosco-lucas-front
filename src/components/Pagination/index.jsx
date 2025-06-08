@@ -1,19 +1,67 @@
-const Pagination = () => {
+import Link from "next/link";
+
+const Pagination = ({ pagination, url, filters }) => {
+  const {
+    hasNextPage,
+    hasPrevPage,
+    nextPage,
+    prevPage,
+    page = 1,
+    totalPages = 1,
+  } = pagination;
+
+  const buildURL = (queryPage) => {
+    const params = new URLSearchParams();
+    params.set("query", queryPage);
+    if (filters) {
+      if (filters.filterParam && filters.valueFilterParam) {
+        params.set("filter", filters.filterParam);
+        params.set("valueFilter", filters.valueFilterParam);
+      }
+      if (filters.user) {
+        params.set("user", filters.user);
+      }
+    }
+    return `${url}?${params.toString()}`;
+  };
+
   return (
     <div className="pagination">
-      <button>
-        <i className="fa-solid fa-chevron-left"></i>
-        <span>Anterior</span>
-      </button>
+      {hasPrevPage && (
+        <button>
+          <Link className="no-decoration" href={buildURL(prevPage)}>
+            <i className="fa-solid fa-chevron-left"></i>
+            <span>Anterior</span>
+          </Link>
+        </button>
+      )}
 
-      <button>1</button>
-      <button className="pagination__active">2</button>
-      <button>3</button>
+      {prevPage && prevPage !== page && (
+        <button>
+          <Link className="no-decoration" href={buildURL(prevPage)}>
+            {prevPage}
+          </Link>
+        </button>
+      )}
 
-      <button>
-        <span>Siguiente</span>
-        <i className="fa-solid fa-chevron-right"></i>
-      </button>
+      <button className="pagination__active">{page}</button>
+
+      {nextPage && nextPage !== page && (
+        <button>
+          <Link className="no-decoration" href={buildURL(nextPage)}>
+            {nextPage}
+          </Link>
+        </button>
+      )}
+
+      {hasNextPage && (
+        <button>
+          <Link className="no-decoration" href={buildURL(nextPage)}>
+            <span>Siguiente</span>
+            <i className="fa-solid fa-chevron-right"></i>
+          </Link>
+        </button>
+      )}
     </div>
   );
 };

@@ -1,6 +1,15 @@
 import "@/styles/_global.scss";
 
-import { Header, Sidebar } from "@/components";
+//Providers
+import { SessionProvider } from "@/context/SessionContext";
+import { ProductProvider } from "@/context/ProductContext";
+import { CartProvider } from "@/context/CartContext";
+import { ResumeProvider } from "@/context/ResumeContext";
+import { ToastContainer } from "react-toastify";
+
+//Components
+// import { Header, Sidebar, LayoutWrapper } from "@/components";
+import LayoutWrapper from "@/components/LayoutWrapper/LayoutWrapper";
 
 export const metadata = {
   description: "v2.0.0",
@@ -18,12 +27,18 @@ export default function RootLayout({ children }) {
         ></script>
       </head>
       <body className="layout">
-        <Sidebar />
-
-        <main>
-          <Header />
-          {children}
-        </main>
+        <SessionProvider>
+          <ProductProvider>
+            <CartProvider>
+              <ResumeProvider>
+                <LayoutWrapper>
+                  {children}
+                </LayoutWrapper>
+              </ResumeProvider>
+              <ToastContainer position="top-center" newestOnTop={false} />
+            </CartProvider>
+          </ProductProvider>
+        </SessionProvider>
       </body>
     </html>
   );

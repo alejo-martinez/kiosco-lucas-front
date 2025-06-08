@@ -3,13 +3,33 @@
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { Button } from "@/components";
+import { useSession } from "@/context/SessionContext";
+import { useRouter } from "next/navigation";
+import { useState, useEffect } from "react";
 
-const Sidebar = ({}) => {
+const Sidebar = ({ }) => {
   const pathname = usePathname();
+  const router = useRouter();
 
-  const auth = true;
+  const { user, logout } = useSession();
 
-  return (
+  const closeSession = async (e) => {
+    e.preventDefault();
+    const response = await logout();
+    if (response.status === 'success') {
+      router.push('/login')
+    }
+  }
+
+  const [mounted, setMounted] = useState(false);
+
+  useEffect(() => {
+    setMounted(true);
+  }, []);
+
+  
+  if (!mounted) return null;
+  else return (
     <div className="sidebar">
       <Link className={pathname === "/" ? "active" : ""} href={"/"}>
         <div>
@@ -18,7 +38,7 @@ const Sidebar = ({}) => {
         Inicio
       </Link>
 
-      {auth && (
+      {user?.role === 'admin' && (
         <>
           <Link
             className={pathname === "/panel" ? "active" : ""}
@@ -47,19 +67,19 @@ const Sidebar = ({}) => {
             </div>
             Crear
           </Link>
-          <Link
-            className={pathname === "/resumes/diary" ? "active" : ""}
-            href={"/resumes/diary"}
-          >
-            <div>
-              <i className="fa-solid fa-file"></i>
-            </div>
-            Resúmenes
-          </Link>
         </>
       )}
+      <Link
+        className={pathname === "/resumes/diary" ? "active" : ""}
+        href={"/resumes/diary"}
+      >
+        <div>
+          <i className="fa-solid fa-file"></i>
+        </div>
+        Resúmenes
+      </Link>
 
-      <Button color="red">Cerrar Sesión</Button>
+      <Button color="red" onClick={closeSession}>Cerrar Sesión</Button>
     </div>
   );
 };

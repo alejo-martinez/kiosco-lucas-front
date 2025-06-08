@@ -1,7 +1,7 @@
-const Button = ({ children }) => {
+const Button = ({ children, checked, onChange }) => {
   return (
     <label className="checkbox">
-      <input type="checkbox" />
+      <input type="checkbox" checked={checked} onChange={onChange}/>
       {children}
     </label>
   );

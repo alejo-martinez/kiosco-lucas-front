@@ -1,6 +1,6 @@
-const Card = ({ children, className }) => {
+const Card = ({ children, className, keyId }) => {
   return (
-    <div className={`card${className ? ` ${className}` : ""}`}>{children}</div>
+    <div className={`card${className ? ` ${className}` : ""}`} key={keyId}>{children}</div>
   );
 };
 

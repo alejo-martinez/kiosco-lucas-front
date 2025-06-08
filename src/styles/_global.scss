@@ -20,8 +20,10 @@
 @import '../components/Stock/styles.scss';
 @import '../components/Tooltip/styles.scss';
 
+@import '../app//login/style.scss';
 @import '../app/panel/styles.scss';
 @import '../app/sells/styles.scss';
+@import '../app//panel//update/[id]/style.scss';
 
 @import '../app/resumes/[cat]/[id]/styles.scss';
 @import '../app/panel/add/product/styles.scss';

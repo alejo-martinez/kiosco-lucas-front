@@ -58,3 +58,20 @@
         }
     }
 }
+
+.title__delete{
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.prod__delete{
+    font-weight: bold;
+}
+
+.butons__modal{
+    display: flex;
+    justify-content: center;
+    margin-top: 12px;
+    gap: 10px;
+}

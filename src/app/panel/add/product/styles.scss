@@ -18,3 +18,32 @@
         }
     }
 }
+
+.add-product__form {
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+
+    h2 {
+        margin-bottom: 1rem;
+    }
+
+    .form-group {
+        display: flex;
+        flex-direction: column;
+        gap: 0.4rem;
+
+        label {
+            font-weight: 500;
+            color: #333;
+            font-size: 0.95rem;
+        }
+
+        input {
+            padding: 0.6rem 0.8rem;
+            border: 1px solid #ccc;
+            border-radius: 6px;
+            font-size: 1rem;
+        }
+    }
+}
