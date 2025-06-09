@@ -1,6 +1,6 @@
 'use client';
 
-import { Card, Input, Button } from "@/components";
+import { Card, Input } from "@/components";
 import api from "@/utils/axios.config";
 import { useState } from "react";
 import { toast } from "react-toastify";

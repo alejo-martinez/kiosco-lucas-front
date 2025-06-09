@@ -3,14 +3,14 @@
 import { useRouter } from "next/navigation";
 
 import { Sales, Dropdown, DropdownItem } from "@/components";
-import { useEffect, useState } from "react";
+import { useEffect, useState, Suspense } from "react";
 import api from "@/utils/axios.config";
 import { useSearchParams } from "next/navigation";
 
-const Sells = () => {
+const SellsContent = () => {
 
   const params = useSearchParams();
-  const userParam = params.get('user');
+
   const queryParam = params.get('query')
 
   const [users, setUsers] = useState([]);
@@ -53,5 +53,11 @@ const Sells = () => {
     </div>
   );
 };
+
+const Sells = () => (
+  <Suspense fallback={<div>Cargando...</div>}>
+    <SellsContent />
+  </Suspense>
+)
 
 export default Sells;
