@@ -1,15 +1,15 @@
 import "@/styles/_global.scss";
 
-//Providers
-import { SessionProvider } from "@/context/SessionContext";
-import { ProductProvider } from "@/context/ProductContext";
-import { CartProvider } from "@/context/CartContext";
-import { ResumeProvider } from "@/context/ResumeContext";
 import { ToastContainer } from "react-toastify";
 
 //Components
 // import { Header, Sidebar, LayoutWrapper } from "@/components";
 import LayoutWrapper from "@/components/LayoutWrapper/LayoutWrapper";
+import { CartProvider } from "@/context/CartContext";
+import { ProductProvider } from "@/context/ProductContext";
+import { ResumeProvider } from "@/context/ResumeContext";
+//Providers
+import { SessionProvider } from "@/context/SessionContext";
 
 export const metadata = {
   description: "v2.0.0",
@@ -35,7 +35,7 @@ export default function RootLayout({ children }) {
                   {children}
                 </LayoutWrapper>
               </ResumeProvider>
-              <ToastContainer position="top-center" newestOnTop={false} />
+              <ToastContainer newestOnTop={false} position="top-center" />
             </CartProvider>
           </ProductProvider>
         </SessionProvider>

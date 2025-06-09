@@ -1,21 +1,22 @@
 "use client";
 
+import { useEffect, useState } from "react";
+import { toast } from "react-toastify";
+
 import { Button, Cart, Input, Modal, Payment } from "@/components";
 import { useCart } from "@/context/CartContext";
-import { useResume } from "@/context/ResumeContext";
-import { useEffect, useState } from "react";
-import socket from "@/utils/socket.config";
-import api from "@/utils/axios.config";
-import { toast } from "react-toastify";
 import { useProduct } from "@/context/ProductContext";
+import { useResume } from "@/context/ResumeContext";
+import api from "@/utils/axios.config";
+import socket from "@/utils/socket.config";
 
 const Home = () => {
 
   const descuento = process.env.NEXT_PUBLIC_DESCUENTO_VENDEDORES;
 
   const { loading } = useCart();
-  const { showModal, initDay, initAmount, setInitAmount, setShowModal, createResume, showExpenseModal, setShowExpenseModal, openExpenseModal, resumeId } = useResume();
-  const { updateLowStock, setUpdateLowStock, addStockModal, setAddStockModal } = useProduct();
+  const { createResume, initAmount, initDay, openExpenseModal, resumeId, setInitAmount, setShowExpenseModal, setShowModal, showExpenseModal, showModal } = useResume();
+  const { addStockModal, setAddStockModal, setUpdateLowStock, updateLowStock } = useProduct();
 
   const [product, setProduct] = useState(null);
   const [querySearch, setQuerySearch] = useState('');
@@ -161,30 +162,30 @@ const Home = () => {
           <>
             <Cart />
             <Payment />
-            <Modal title="Iniciar jornada" isOpen={showModal} setIsOpen={initDay}>
-              <Input type="number" placeholder="Caja inicial" onChange={handleInitAmount} value={initAmount} />
+            <Modal isOpen={showModal} setIsOpen={initDay} title="Iniciar jornada">
+              <Input placeholder="Caja inicial" type="number" value={initAmount} onChange={handleInitAmount} />
 
               <div>
                 <Button color="red" onClick={() => setShowModal(false)}>Cancelar</Button>
                 <Button color="green" onClick={submitInitAmount}>Aceptar</Button>
               </div>
             </Modal>
-            <Modal title="Agregar consumos" isOpen={showExpenseModal} setIsOpen={openExpenseModal} >
-              <Input type="text" placeholder="Escanee un producto" value={querySearch} onKeyDown={searchProduct} onChange={handleChangeEmptyInput} />
+            <Modal isOpen={showExpenseModal} setIsOpen={openExpenseModal} title="Agregar consumos" >
+              <Input placeholder="Escanee un producto" type="text" value={querySearch} onChange={handleChangeEmptyInput} onKeyDown={searchProduct} />
               {product &&
                 <div className="products__expense">
                   <span>Producto: {product.title}</span>
                   <span>Precio al vendedor: ${(product.sellingPrice * Number(descuento)).toFixed(2)}</span>
-                  <Button onClick={submitExpense} color="green">Aceptar</Button>
+                  <Button color="green" onClick={submitExpense}>Aceptar</Button>
                 </div>
               }
-              <Button onClick={closeExpenseModal} color="red">Cancelar</Button>
+              <Button color="red" onClick={closeExpenseModal}>Cancelar</Button>
             </Modal>
           </>
         }
 
         <Modal isOpen={addStockModal} setIsOpen={() => setAddStockModal(true)} title="Agregar stock">
-          <Input placeholder={updateLowStock ? "Ingrese stock a agregar" : "Ingrese el código del producto"} value={updateLowStock ? stockValue : querySearch} type={updateLowStock ? "number" : "text"} onChange={!updateLowStock ? handleChangeEmptyInput : handleChangeStockValue} onKeyDown={submitStockModal} />
+          <Input placeholder={updateLowStock ? "Ingrese stock a agregar" : "Ingrese el código del producto"} type={updateLowStock ? "number" : "text"} value={updateLowStock ? stockValue : querySearch} onChange={!updateLowStock ? handleChangeEmptyInput : handleChangeStockValue} onKeyDown={submitStockModal} />
           {updateLowStock &&
             <>
               <div className="products__expense">
