@@ -1,11 +1,12 @@
 "use client";
 
+import { Suspense } from "react";
 import { Stock, Dropdown, DropdownItem } from "@/components";
 
 import { useRouter } from "next/navigation";
 import { useSearchParams } from "next/navigation";
 
-const Panel = () => {
+const PanelContent = () => {
   const router = useRouter();
   const searchParams = useSearchParams();
   const paramValue = searchParams.get("query");
@@ -46,5 +47,11 @@ const Panel = () => {
     </div>
   );
 };
+
+const Panel = () => (
+  <Suspense fallback={<div>Cargando...</div>}>
+    <PanelContent />
+  </Suspense>
+)
 
 export default Panel;
