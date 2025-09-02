@@ -25,7 +25,7 @@ const getTenant = () => {
 
 const api = axios.create({
     baseURL: url,
-    timeout: 15000,
+    timeout: 30000,
     withCredentials: true,
 })
 
