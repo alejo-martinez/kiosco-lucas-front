@@ -186,7 +186,11 @@ const Payment = () => {
           <span>${change.toFixed(2)}</span>
         </div>
       }
-      {loading ? <LoadingSpinner /> :
+      {loading ?
+        <div className="loading-container">
+          <LoadingSpinner />
+        </div>
+        :
         <Button color={change > 0 ? "red" : "green"} onClick={change > 0 ? cleanChange : completeSell}>{change > 0 ? 'Limpiar vuelto' : 'Realizar venta'}</Button>
       }
     </div>
