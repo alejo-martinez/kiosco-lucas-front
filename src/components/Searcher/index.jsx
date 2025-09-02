@@ -15,7 +15,7 @@ const Searcher = () => {
   const pathname = usePathname();
   const router = useRouter();
   const { user } = useSession();
-  const { searchProductByCode, setSearchProductByCode } = useProduct();
+  const { searchProductByCode, searchProductByTitle } = useProduct();
 
   const [showProductInfo, setShowProductInfo] = useState(false);
   const [productInfo, setProductInfo] = useState(null);
@@ -24,10 +24,10 @@ const Searcher = () => {
   const handleSubmitSearch = (e) => {
     if (e.key === 'Enter') {
       if (pathname === "/") {
-        socket.emit('search', { query: e.target.value, cid: user.cart, quantity: 1 });
+        socket.emit('search', { query: e.target.value, cid: user.cart, quantity: 1, socketId: socket.id });
         e.target.value = '';
       } else if (pathname === "/panel") {
-        socket.emit('searchCode', { query: e.target.value });
+        socket.emit('searchCode', { query: e.target.value, socketId: socket.id });
         e.target.value = '';
       }
     }
@@ -35,8 +35,17 @@ const Searcher = () => {
 
   const handleSearchProductByCode = async (e) => {
     if (e.key === 'Enter') {
-      socket.emit('searchCode', { query: e.target.value });
+      socket.emit('searchCode', { query: e.target.value, socketId: socket.id });
       e.target.value = '';
+    }
+  }
+
+  const handleSearchProductByTitle = (e) => {
+    if (e.target.value.length > 2) {
+      socket.emit('searchTitle', { query: e.target.value, socketId: socket.id });
+    }
+    if (e.target.value.length === 0) {
+      socket.emit('searchTitle', { query: null, socketId: socket.id });
     }
   }
 
@@ -92,13 +101,13 @@ const Searcher = () => {
     setMounted(true);
   }, []);
 
-  
+
   if (!mounted) return null;
   else return (
     <>
       <div className="searcher">
         <i className="fa-solid fa-magnifying-glass"></i>
-        <input type="text" placeholder="Código" onKeyDown={!searchProductByCode ? handleSubmitSearch : handleSearchProductByCode} />
+        <input type="text" placeholder={searchProductByTitle ? 'Producto' : 'Código'} onKeyDown={!searchProductByCode ? handleSubmitSearch : handleSearchProductByCode} onChange={searchProductByTitle ? handleSearchProductByTitle : undefined} />
       </div>
       <Modal isOpen={showProductInfo} setIsOpen={() => setShowProductInfo(true)} title="Información del producto">
         <div className="product-info">

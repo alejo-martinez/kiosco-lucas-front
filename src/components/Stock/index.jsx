@@ -8,6 +8,7 @@ import { useSearchParams } from 'next/navigation';
 import api from "@/utils/axios.config";
 import { useRouter } from "next/navigation";
 import { toast } from "react-toastify";
+import socket from "@/utils/socket.config";
 
 const Stock = () => {
   const router = useRouter();
@@ -130,7 +131,17 @@ const Stock = () => {
     setStockValue(e.target.value);
   }
 
+  useEffect(() => {
+    socket.on('resultTitle', async (data) => {
 
+      if (data.empty) {
+        await fetchData();
+        return;
+      }
+      setProducts(data.results);
+    });
+    return () => socket.off('resultTitle');
+  }, []);
 
   useEffect(() => {
     fetchData();
@@ -189,19 +200,19 @@ const Stock = () => {
                         </Tooltip>}
                     </td>
                     <td align="center">{value.totalStock}</td>
-                    {user?.role === 'admin' &&
+                    {(user?.role === 'admin' || user?.role === 'god') &&
                       <td align="center">{value.percentage.toFixed(2)}%</td>
                     }
                     <td align="center">
                       <Button color="green" onClick={(e) => openModalLowStock(e, value, index)}>
                         <i title="Agregar stock" className="fa-solid fa-plus"></i>
                       </Button>
-                      {user?.role === 'admin' &&
+                      {(user?.role === 'admin' || user?.role === 'god') &&
                         <Button onClick={(e) => navigateUpdateProduct(e, value._id)}>
                           <i title="Editar producto" className="fa-solid fa-pen"></i>
                         </Button>
                       }
-                      {user?.role === 'admin' &&
+                      {(user?.role === 'admin' || user?.role === 'god') &&
                         <Button color="red" onClick={(e) => openModalDelete(e, value, index)}>
                           <i title="Eliminar producto" className="fa-solid fa-trash-can"></i>
                         </Button>

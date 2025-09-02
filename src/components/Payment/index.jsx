@@ -40,7 +40,12 @@ const Payment = () => {
         if (changeResult < 0) {
           throw new Error('Monto para abonar insuficente')
         }
-        if (changeResult > 0) setChange(changeResult)
+        if (changeResult > 0) {
+          setChange(changeResult)
+          setTimeout(() => {
+            cleanChange(e);
+          }, 5000);
+        }
       }
       const response = await api.post('/api/ticket/create', { amount: amount, payment_method: paymentMethod, rid: resumeId });
       const data = response.data;
@@ -143,7 +148,7 @@ const Payment = () => {
       <div>
         <p>Total a pagar:</p>
 
-        <span>${amount}</span>
+        <span>${amount.toFixed(2)}</span>
       </div>
 
       {paymentMethod === 'eft' &&
@@ -170,11 +175,10 @@ const Payment = () => {
           <p>Vuelto:</p>
 
           <span>${change.toFixed(2)}</span>
-          {/* <Button color="green" onClick={cleanChange}>Limpiar</Button> */}
         </div>
       }
 
-      <Button color={change > 0? "red" : "green"} onClick={change > 0 ? cleanChange : completeSell}>{change > 0 ? 'Limpiar vuelto' : 'Realizar venta'}</Button>
+      <Button color={change > 0 ? "red" : "green"} onClick={change > 0 ? cleanChange : completeSell}>{change > 0 ? 'Limpiar vuelto' : 'Realizar venta'}</Button>
     </div>
   );
 };

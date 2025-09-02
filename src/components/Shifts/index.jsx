@@ -28,9 +28,16 @@ const Shifts = () => {
         setResumes(data.payload.docs)
         setSetings(data.payload)
         setLoading(false)
+      } else {
+        setResumes([])
+        setSetings(null)
+        setLoading(false)
       }
     } catch (error) {
       console.log(error);
+      setLoading(false);
+      setResumes(null);
+      setSetings(null);
     }
   }
 
@@ -64,14 +71,14 @@ const Shifts = () => {
             </thead>
 
             <tbody>
-              {resumes.map((value, index) => {
+              {resumes ? resumes.map((value, index) => {
                 return (
 
                   <tr key={index}>
                     <td align="center">{formatDate(value.init_date.init)}</td>
                     <td align="center">{value.sales > 1 ? `${value.sales} ventas` : value.sales === 0 ? `Sin ventas` : `${value.sales} venta`}</td>
                     <td align="center">${value.amount.toFixed(2)}</td>
-                    <td align="center" className={value.finish_date? "" : "shifts__current-shift"}>
+                    <td align="center" className={value.finish_date ? "" : "shifts__current-shift"}>
                       {value.finish_date ?
                         <Link href={`/resumes/diary/${value._id}`}>Ver detalles</Link>
                         :
@@ -80,11 +87,12 @@ const Shifts = () => {
                     </td>
                   </tr>
                 )
-              })}
+              }) : <tr><td colSpan="4" align="center">No hay resúmenes.</td></tr>}
             </tbody>
           </table>
-
-          <Pagination pagination={setings} url={'/resumes/diary'} />
+          {setings &&
+            <Pagination pagination={setings} url={'/resumes/diary'} />
+          }
         </>
       }
     </div>

@@ -16,7 +16,7 @@ const Header = () => {
 
   const { resumeId, initDay, endDay, setShowExpenseModal } = useResume();
   const { user } = useSession();
-  const { addStockModal, setAddStockModal, lowStockProducts, searchProductByCode, setSearchProductByCode } = useProduct();
+  const { addStockModal, setAddStockModal, lowStockProducts, searchProductByCode, setSearchProductByCode, searchProductByTitle, setSearchProductByTitle } = useProduct();
 
   const [actualDate, setActualDate] = useState(null)
 
@@ -73,9 +73,13 @@ const Header = () => {
     setShowExpenseModal(true)
   }
 
-    const handleCheckboxChange = (e) => {
+  const handleCheckboxChange = (e) => {
     setSearchProductByCode(e.target.checked);
   };
+
+  const handleCheckboxChangeTitle = (e) => {
+    setSearchProductByTitle(e.target.checked);
+  }
 
 
   useEffect(() => {
@@ -91,7 +95,7 @@ const Header = () => {
   return (
     <div className="header">
       <div className="header__actions">
-        {(user?._id === rodrigoId || user?.role === 'admin') && (
+        {(user?._id === rodrigoId || user?.role === 'admin' || user?.role === 'god') && (
           <>
             {(pathname === '/') && (
               <>
@@ -103,7 +107,7 @@ const Header = () => {
               </>
             )}
 
-            {user?.role !== 'admin' && (
+            {(user?.role !== 'admin' || user?.role === 'god') && (
               <Button onClick={openExpenseModal}>Agregar consumo</Button>
             )}
           </>
@@ -118,6 +122,9 @@ const Header = () => {
           <div>
             {/* <Checkbox>Desactivar lector</Checkbox> */}
             <Checkbox checked={searchProductByCode} onChange={handleCheckboxChange}>Buscar por código</Checkbox>
+            {pathname === '/panel' &&
+              <Checkbox checked={searchProductByTitle} onChange={handleCheckboxChangeTitle}>Buscar por nombre</Checkbox>
+            }
           </div>
         </div>
       }

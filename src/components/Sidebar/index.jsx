@@ -27,7 +27,7 @@ const Sidebar = ({ }) => {
     setMounted(true);
   }, []);
 
-  
+
   if (!mounted) return null;
   else return (
     <div className="sidebar">
@@ -38,7 +38,7 @@ const Sidebar = ({ }) => {
         Inicio
       </Link>
 
-      {user?.role === 'admin' && (
+      {(user?.role === 'admin' || user?.role === 'god') && (
         <>
           <Link
             className={pathname === "/panel" ? "active" : ""}

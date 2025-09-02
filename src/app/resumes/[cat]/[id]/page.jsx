@@ -38,7 +38,7 @@ const Resume = () => {
     e.preventDefault()
     setShowSells(prev => !prev);
   };
-  
+
   const formatDate = (date) => {
     const options = {
       day: '2-digit',
@@ -56,19 +56,17 @@ const Resume = () => {
     try {
       const response = await api.get(`/api/resume/summary/${id}`);
       const data = response.data;
-      // const resumeStatics = generateStats(data.payload);
-      // setStatics(resumeStatics);
 
-      setResume(data.payload);
-      setLoading(false);
+      if (data.status === 'success') {
+        setResume(data.payload);
+        setLoading(false);
+      } else {
+        setLoading(false);
+        setResume(null);
+      }
     } catch (error) {
       console.log(error);
-      // toast.error(error.message, {
-      //   duration: 2000,
-      //   hideProgressBar: true,
-      //   pauseOnFocusLoss: false,
-      //   pauseOnHover: false
-      // })
+
     }
   }
 
@@ -118,8 +116,8 @@ const Resume = () => {
                     </div>
 
                     <div>
-                      <p>Caja final</p>
-                      <span>-</span>
+                      <p>Caja final estimada</p>
+                      <span>${resume.checkout | resume.initAmount}</span>
                     </div>
                   </>
                   :
@@ -128,11 +126,53 @@ const Resume = () => {
                   </div>
                 }
               </div>
+              <div>
+                <div>
+                  <p>Duración de la jornada</p>
+                  <span>{resume.duration}</span>
+                </div>
+                <div>
+                  <p>Hora con mas ventas</p>
+                  <span>{resume.peakHour}</span>
+                </div>
+              </div>
+
+              <div>
+                <div>
+                  <p>Ganancia bruta</p>
+                  <span>${resume.ganancy.toFixed(2)}</span>
+                </div>
+              </div>
+              <div>
+                <div>
+                  <p>Porcentaje de ganancia jornal</p>
+                  <span>{resume.ganancyPercentage.toFixed(2)}%</span>
+                </div>
+              </div>
+              <div>
+                <div>
+                  <p>Producto mas vendido</p>
+                  <span>{resume.mostSelled.title} {`(${resume.mostSelled.totalVendida})`}</span>
+                </div>
+              </div>
+              <div>
+                <div>
+                  <span>Productos mas vendidos</span>
+                </div>
+                {resume.topSelled.map((value, index) => {
+                  return (
+                    <div key={index}>
+                      <p>{value.title}</p>
+                      <span>Vendidos: {value.totalVendida}</span>
+                    </div>
+                  )
+                })}
+              </div>
             </div>
 
             <div className="resume__header__total">
               <p>Total vendido</p>
-              <span>${resume.amount}</span>
+              <span>${resume.amount.toFixed(2)}</span>
             </div>
           </Card>
 
@@ -143,7 +183,7 @@ const Resume = () => {
               return (
                 <Card className="resume__payment-methods__method" key={`${index}pm`}>
                   <p>{formatPaymentMethod(value.method)}</p>
-                  <span>${value.amount}</span>
+                  <span>${value.amount.toFixed(2)}</span>
                 </Card>
               )
             })}
@@ -161,9 +201,9 @@ const Resume = () => {
                       Cantidad: <span>{value.quantity}</span>
                     </p>
                     <p>
-                      Total: <span>${value.total}</span>
+                      Total: <span>${value.total.toFixed(2)}</span>
                     </p>
-                    {user?.role === 'admin' &&
+                    {(user?.role === 'admin' || user?.role === 'god') &&
                       <>
                         <p>
                           Ganancia: <span>${value.ganancia.toFixed(2)}</span>
@@ -210,7 +250,7 @@ const Resume = () => {
                       </div>
 
                       <div className="resume__sell__total">
-                        <span>${value.ticket?.amount}</span>
+                        <span>${value.ticket?.amount.toFixed(2)}</span>
                       </div>
                     </Card>
 

@@ -7,7 +7,7 @@ import { useRouter } from "next/navigation";
 const SessionContext = createContext(undefined);
 export const SessionProvider = ({ children }) => {
     const url = process.env.NEXT_PUBLIC_URL_BACK;
-    
+
     const router = useRouter();
     const [user, setUser] = useState(null);
     const [adminLogued, setAdminLogued] = useState(false);
@@ -21,11 +21,11 @@ export const SessionProvider = ({ children }) => {
             localStorage.setItem('user', JSON.stringify(data.payload));
             return data;
         } catch (error) {
-            if(error.response){
+            if (error.response) {
                 return error.response.data;
-            }if(error.request){
+            } if (error.request) {
                 console.log(error.request)
-            } else{
+            } else {
                 console.log(error);
             }
         }
@@ -33,21 +33,21 @@ export const SessionProvider = ({ children }) => {
 
     const register = async (userRegister) => {
         try {
-            const response = await api.post('/api/session/register', {userRegister});
+            const response = await api.post('/api/session/register', { userRegister });
             const data = response.data;
             return data;
         } catch (error) {
-            if(error.response){
+            if (error.response) {
 
-            }if(error.request){
+            } if (error.request) {
 
-            } else{
+            } else {
 
             }
         }
     };
 
-    const logout = async()=>{
+    const logout = async () => {
         try {
             const response = await api.delete('/api/session/logout');
             const data = response.data;
@@ -55,11 +55,11 @@ export const SessionProvider = ({ children }) => {
             localStorage.removeItem('user');
             return data;
         } catch (error) {
-            if(error.response){
+            if (error.response) {
                 return error.response.data;
-            }if(error.request){
+            } if (error.request) {
                 console.log(error.request)
-            } else{
+            } else {
                 console.log(error);
             }
         }
@@ -69,23 +69,23 @@ export const SessionProvider = ({ children }) => {
         try {
             const response = await api.get('/api/session/current');
             const data = response.data;
-            if(data.payload.role === 'admin') setAdminLogued(true)
+            if (data.payload.role === 'admin' || data.payload.role === 'god') setAdminLogued(true)
             return data;
         } catch (error) {
-            if(error.response){
+            if (error.response) {
                 return error.response.data;
-            }if(error.request){
+            } if (error.request) {
                 console.log(error.request);
-            } else{
+            } else {
                 console.log(error);
             }
         }
     };
 
-    useEffect(()=>{
-        const fetchData = async()=>{
+    useEffect(() => {
+        const fetchData = async () => {
             const data = await currentUser();
-            if(data.status === 'success'){
+            if (data.status === 'success') {
                 setUser(data.payload);
                 localStorage.setItem('user', JSON.stringify(data.payload));
                 setLoading(false);
@@ -95,10 +95,10 @@ export const SessionProvider = ({ children }) => {
             }
         }
         fetchData();
-    },[]);
+    }, []);
 
     return (
-        <SessionContext.Provider value={{user, login, register, logout, adminLogued}}>
+        <SessionContext.Provider value={{ user, login, register, logout, adminLogued }}>
             {children}
         </SessionContext.Provider>
     )

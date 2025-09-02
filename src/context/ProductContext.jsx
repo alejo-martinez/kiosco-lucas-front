@@ -18,6 +18,7 @@ export const ProductProvider = ({ children }) => {
     const [addStockModal, setAddStockModal] = useState(false);
     const [updateLowStock, setUpdateLowStock] = useState(null);
     const [searchProductByCode, setSearchProductByCode] = useState(false);
+    const [searchProductByTitle, setSearchProductByTitle] = useState(false);
 
     const fetchProducts = async () => {
         try {
@@ -53,6 +54,7 @@ export const ProductProvider = ({ children }) => {
         if (user) fetchProducts();
 
         const handleResultTitle = (data) => {
+            if (data.empty) return;
             if (data.results.length > 0) {
                 setProducts(data.results);
             }
@@ -65,7 +67,7 @@ export const ProductProvider = ({ children }) => {
                 if (exists) return prev;
 
                 const updated = [...prev, data.prod];
-                console.log("Producto agregado al low stock:", updated);
+
                 return updated;
             });
         };
@@ -80,7 +82,7 @@ export const ProductProvider = ({ children }) => {
     }, [user, products]);
 
     return (
-        <ProductContext.Provider value={{ products, setProducts, lowStockProducts, updateProd, setUpdateProd, showStockModal, setShowStockModal, getFilterProds, addStockModal, setAddStockModal, updateLowStock, setUpdateLowStock, searchProductByCode, setSearchProductByCode }}>
+        <ProductContext.Provider value={{ products, setProducts, lowStockProducts, updateProd, setUpdateProd, showStockModal, setShowStockModal, getFilterProds, addStockModal, setAddStockModal, updateLowStock, setUpdateLowStock, searchProductByCode, setSearchProductByCode, searchProductByTitle, setSearchProductByTitle }}>
             {children}
         </ProductContext.Provider>
     )
