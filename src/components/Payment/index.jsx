@@ -8,7 +8,7 @@ import { useResume } from "@/context/ResumeContext";
 import api from "@/utils/axios.config";
 import { useEffect, useState } from "react";
 import { toast } from "react-toastify";
-
+import { LoadingSpinner } from "@/components";
 const Payment = () => {
 
   //Elementos de contexto
@@ -20,6 +20,7 @@ const Payment = () => {
   const [payment, setPayment] = useState(0);
   const [paymentMethod, setPaymentMethod] = useState(null);
   const [change, setChange] = useState(null);
+  const [loading, setLoading] = useState(false);
 
 
   const handlePaymentMethod = (e, pm) => {
@@ -30,17 +31,21 @@ const Payment = () => {
   //Función completar venta
   const completeSell = async (e) => {
     try {
+      setLoading(true);
       e.preventDefault();
       if (payment === 0 && paymentMethod === 'eft') {
+        setLoading(false);
         throw new Error('Monto insuficiente');
       }
       if (payment > 0) {
         const changeResult = Number(payment) - Number(amount);
 
         if (changeResult < 0) {
+          setLoading(false);
           throw new Error('Monto para abonar insuficente')
         }
         if (changeResult > 0) {
+          setLoading(false);
           setChange(changeResult)
           setTimeout(() => {
             cleanChange(e);
@@ -48,9 +53,10 @@ const Payment = () => {
         }
       }
       const response = await api.post('/api/ticket/create', { amount: amount, payment_method: paymentMethod, rid: resumeId });
+      console.log(response);
       const data = response.data;
       if (data.status === 'success') {
-
+        setLoading(false);
         setPaymentMethod(null)
         setPayment(0)
         setAmount(0);
@@ -67,6 +73,7 @@ const Payment = () => {
     } catch (error) {
       if (error.status === 403) {
         // alert(error.response.data.error)
+        setLoading(false);
         toast.error(error.response.data.error, {
           autoClose: 2000,
           pauseOnFocusLoss: false,
@@ -78,6 +85,7 @@ const Payment = () => {
         // router.push("/login")
         return error.response.data
       } else if (error.response) {
+        setLoading(false);
         // alert(error.response.data.error)
         toast.error(error.response.data.error, {
           autoClose: 2000,
@@ -88,6 +96,7 @@ const Payment = () => {
           className: 'toast-error'
         })
       } else {
+        setLoading(false);
         console.log(error);
         // alert(error.message)
         toast.error(error.message, {
@@ -177,8 +186,9 @@ const Payment = () => {
           <span>${change.toFixed(2)}</span>
         </div>
       }
-
-      <Button color={change > 0 ? "red" : "green"} onClick={change > 0 ? cleanChange : completeSell}>{change > 0 ? 'Limpiar vuelto' : 'Realizar venta'}</Button>
+      {loading ? <LoadingSpinner /> :
+        <Button color={change > 0 ? "red" : "green"} onClick={change > 0 ? cleanChange : completeSell}>{change > 0 ? 'Limpiar vuelto' : 'Realizar venta'}</Button>
+      }
     </div>
   );
 };
