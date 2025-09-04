@@ -115,6 +115,7 @@ const Home = () => {
       setStockValue(0);
       setUpdateLowStock(null);
       setAddStockModal(false);
+      setProduct(null);
     }
   }
 
@@ -138,7 +139,7 @@ const Home = () => {
 
   useEffect(() => {
     socket.on('resultCode', async (data) => {
-      console.log(data)
+      // console.log(data)
       setUpdateLowStock(data.producto);
       setProduct(data.producto);
     }, []);
