@@ -49,7 +49,7 @@ const Home = () => {
 
   const searchProduct = async (e) => {
     if (e.key === 'Enter') {
-      socket.emit('searchCode', { query: querySearch });
+      socket.emit('searchCode', { query: querySearch, socketId: socket.id });
       setQuerySearch('');
     }
   }
@@ -138,9 +138,10 @@ const Home = () => {
 
   useEffect(() => {
     socket.on('resultCode', async (data) => {
+      console.log(data)
       setUpdateLowStock(data.producto);
       setProduct(data.producto);
-    })
+    }, []);
 
     socket.on('errorUpdate', async (data) => {
       toast.error(data.error, {
