@@ -18,7 +18,7 @@ const Cart = () => {
     if (isProcessing.current) return;
     isProcessing.current = true;
     if (prod.quantity + 1 <= prod.product.stock) {
-      socket.emit('addToCart', { cid: user.cart, pid: prod.product._id, quantity: 1 });
+      socket.emit('addToCart', { cid: user.cart, pid: prod.product._id, quantity: 1, socketId: socket.id });
     }
 
     setTimeout(() => isProcessing.current = false, 300);
@@ -29,7 +29,7 @@ const Cart = () => {
     if (isProcessing.current) return;
     isProcessing.current = true;
     if (prod.quantity - 1 > 0) {
-      socket.emit('addToCart', { cid: user.cart, pid: prod.product._id, quantity: -1 });
+      socket.emit('addToCart', { cid: user.cart, pid: prod.product._id, quantity: -1, socketId: socket.id });
     }
 
     setTimeout(() => isProcessing.current = false, 300);
