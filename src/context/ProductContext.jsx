@@ -71,7 +71,7 @@ export const ProductProvider = ({ children }) => {
                 const exists = prev.some(p => p._id === data.products[0]);
                 if (exists) return prev;
 
-                const updated = [...prev, data.prod];
+                const updated = [...prev, data.products[0]];
 
                 return updated;
             });
