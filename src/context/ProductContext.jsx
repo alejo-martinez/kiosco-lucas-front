@@ -63,6 +63,9 @@ export const ProductProvider = ({ children }) => {
         const handleLowStock = (data) => {
             setLowStockProducts(prev => {
                 // Verificamos si ya existe el producto para evitar duplicados (opcional)
+                console.log('DATA LOW STOCK:', data);
+                console.log('PREV LOW STOCK:', prev);
+                if (!data) return prev;
                 console.log(data.prod);
                 if (data.length === 0) return prev;
                 const exists = prev.some(p => p._id === data.prod._id);
